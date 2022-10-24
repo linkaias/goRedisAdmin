@@ -2,17 +2,17 @@ package api_router
 
 import (
 	"github.com/gin-gonic/gin"
-	"goRedisAdmin/routers/api_router/user_router"
+	"goRedisAdmin/routers/api_router/db_router"
 )
 
 var EnterRouter = new(routerGroup)
 
 //全部路由组
 type routerGroup struct {
-	user_router.UserRouterGroup
+	db_router.DbRouterGroup
 }
 
 func RunApiRouter(r *gin.RouterGroup) {
 	gp := r.Group("api/v1")
-	EnterRouter.UserRouterGroup.UserRouter.InitRouter(gp)
+	EnterRouter.DbRouterGroup.DbDataRouter.InitRouter(gp)
 }
