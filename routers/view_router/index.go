@@ -2,15 +2,11 @@ package view_router
 
 import (
 	"github.com/gin-gonic/gin"
-	"goRedisAdmin/routers/middleware"
 	"io/ioutil"
 	"net/http"
 )
 
 func RunViewRouter(r *gin.Engine) *gin.Engine {
-
-	//登录限制
-	r.Use(middleware.HTTPAuthMiddleware())
 
 	r.Static("/js", "./html/js")
 	r.Static("/css", "./html/css")

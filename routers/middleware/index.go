@@ -19,6 +19,7 @@ func HTTPAuthMiddleware() gin.HandlerFunc {
 		} else {
 			ctx.Writer.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
 			http.Error(ctx.Writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			ctx.Abort()
 		}
 
 	}
