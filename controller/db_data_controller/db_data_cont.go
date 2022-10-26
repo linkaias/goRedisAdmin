@@ -1,6 +1,7 @@
 package db_data_controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"goRedisAdmin/controller"
 	"goRedisAdmin/global/global_redis"
@@ -22,10 +23,14 @@ type DbDataController interface {
 }
 
 func (c dbDataCont) DbList(ctx *gin.Context) {
-	data := make([]uint, 16)
+	data := make([]map[string]interface{}, 0)
 	for i := 0; i < 16; i++ {
+		temp := make(map[string]interface{})
 		num, _ := getDbKeyLen(i)
-		data[i] = num
+		temp["db_num"] = i
+		temp["keys_len"] = num
+		temp["show_name"] = fmt.Sprintf("Db%v", i)
+		data = append(data, temp)
 	}
 	c.Resp.RespSuccessWithData(data, ctx)
 }
@@ -51,6 +56,26 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 	defer rd.Close()
 	filter := "*"
 	info, _ := rd.Keys(filter).Result()
-
-	c.Resp.RespSuccessWithData(info, ctx)
+	data := make([]map[string]interface{}, 0)
+	for i, key := range info {
+		temp := make(map[string]interface{})
+		temp["id"] = i + 1
+		keyType, err := rd.Type(key).Result()
+		if err != nil {
+			temp["msg"] = "Error:" + err.Error()
+		} else {
+			temp["msg"] = "Success!"
+		}
+		temp["type"] = keyType
+		temp["key"] = key
+		expire, _ := rd.TTL(key).Result()
+		expireS := expire.Seconds()
+		if expireS == -1 {
+			temp["expire_at"] = "长期"
+		} else {
+			temp["expire_at"] = expire.String()
+		}
+		data = append(data, temp)
+	}
+	c.Resp.RespSuccessWithData(data, ctx)
 }
