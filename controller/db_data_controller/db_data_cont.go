@@ -20,6 +20,7 @@ func NewDbDataController() DbDataController {
 type DbDataController interface {
 	DbList(ctx *gin.Context)
 	GetKeys(ctx *gin.Context)
+	DelKey(ctx *gin.Context)
 }
 
 func (c dbDataCont) DbList(ctx *gin.Context) {
@@ -78,4 +79,27 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 		data = append(data, temp)
 	}
 	c.Resp.RespSuccessWithData(data, ctx)
+}
+
+// DelKey 删除key
+func (c dbDataCont) DelKey(ctx *gin.Context) {
+	//default db is 0
+	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
+	rd, err := global_redis.GetRedisClient(dbNum)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	defer rd.Close()
+	key := ctx.Query("key")
+	if key == "" {
+		c.Resp.RespError("key is required", ctx)
+		return
+	}
+	_, err = rd.Del(key).Result()
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	c.Resp.RespSuccess(ctx)
 }
