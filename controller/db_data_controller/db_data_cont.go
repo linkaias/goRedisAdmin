@@ -1,6 +1,7 @@
 package db_data_controller
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"goRedisAdmin/controller"
@@ -21,6 +22,7 @@ type DbDataController interface {
 	DbList(ctx *gin.Context)
 	GetKeys(ctx *gin.Context)
 	DelKey(ctx *gin.Context)
+	AddVal(ctx *gin.Context)
 }
 
 func (c dbDataCont) DbList(ctx *gin.Context) {
@@ -102,4 +104,41 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 		return
 	}
 	c.Resp.RespSuccess(ctx)
+}
+
+// AddVal 新增键值
+func (c dbDataCont) AddVal(ctx *gin.Context) {
+	valType := ctx.Query("type")
+	if valType == "" {
+		c.Resp.RespError("type is required", ctx)
+		return
+	}
+	s := new(DbDataHelpModel)
+	err := ctx.ShouldBind(s)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	cont, err := NewDbDataHelpController(s)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	defer cont.CloseClient()
+	err = handleAddVal(valType, cont)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	c.Resp.RespSuccess(ctx)
+}
+
+func handleAddVal(valType string, cont *DbDataHelpCont) error {
+	switch valType {
+	case "string":
+		return cont.AddString()
+	case "list":
+		return cont.AddList()
+	}
+	return errors.New("type not supported ! ")
 }
