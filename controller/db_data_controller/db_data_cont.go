@@ -140,7 +140,6 @@ func handleAddVal(valType string, cont *DbDataHelpCont) error {
 		return cont.AddList()
 	case "set":
 		return cont.AddSet()
-
 	}
 	return errors.New("type not supported ! ")
 }

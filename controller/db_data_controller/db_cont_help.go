@@ -43,7 +43,7 @@ func (d *DbDataHelpCont) CloseClient() {
 }
 
 func (d *DbDataHelpCont) AddString() error {
-	_, err := d.redis.Set(d.Key, d.Val, time.Duration(d.Expire)).Result()
+	_, err := d.redis.Set(d.Key, d.Val, time.Duration(int64(d.Expire))*time.Second).Result()
 	return err
 }
 
@@ -52,12 +52,22 @@ func (d *DbDataHelpCont) AddList() error {
 	if err != nil {
 		return err
 	}
-	if d.Expire > 0 {
-		_, err = d.redis.Expire(d.Key, time.Duration(int64(d.Expire))*time.Second).Result()
-	}
-	return err
+	return setExpire(d)
 }
 
 func (d *DbDataHelpCont) AddSet() error {
-	return nil
+	_, err := d.redis.SAdd(d.Key, d.Val).Result()
+	if err != nil {
+		return err
+	}
+	return setExpire(d)
+}
+
+func setExpire(d *DbDataHelpCont) error {
+	if d.Expire > 0 {
+		_, err := d.redis.Expire(d.Key, time.Duration(int64(d.Expire))*time.Second).Result()
+		return err
+	} else {
+		return nil
+	}
 }
