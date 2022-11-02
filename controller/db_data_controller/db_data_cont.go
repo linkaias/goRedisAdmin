@@ -108,15 +108,14 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 
 // AddVal 新增键值
 func (c dbDataCont) AddVal(ctx *gin.Context) {
-	valType := ctx.Query("type")
-	if valType == "" {
-		c.Resp.RespError("type is required", ctx)
-		return
-	}
 	s := new(DbDataHelpModel)
 	err := ctx.ShouldBind(s)
 	if err != nil {
 		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	if s.VType == "" {
+		c.Resp.RespError("type is required", ctx)
 		return
 	}
 	cont, err := NewDbDataHelpController(s)
@@ -125,7 +124,7 @@ func (c dbDataCont) AddVal(ctx *gin.Context) {
 		return
 	}
 	defer cont.CloseClient()
-	err = handleAddVal(valType, cont)
+	err = handleAddVal(s.VType, cont)
 	if err != nil {
 		c.Resp.RespError(err.Error(), ctx)
 		return
@@ -139,6 +138,9 @@ func handleAddVal(valType string, cont *DbDataHelpCont) error {
 		return cont.AddString()
 	case "list":
 		return cont.AddList()
+	case "set":
+		return cont.AddSet()
+
 	}
 	return errors.New("type not supported ! ")
 }

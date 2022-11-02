@@ -9,6 +9,7 @@ import (
 
 type DbDataHelpModel struct {
 	DbNum  int    `json:"db_num"`
+	VType  string `json:"type"`
 	Key    string `json:"key"`
 	Val    string `json:"val"`
 	Expire int    `json:"expire"`
@@ -47,6 +48,16 @@ func (d *DbDataHelpCont) AddString() error {
 }
 
 func (d *DbDataHelpCont) AddList() error {
-	_, err := d.redis.LPush(d.Key, d.Val, time.Duration(d.Expire)).Result()
+	_, err := d.redis.LPush(d.Key, d.Val).Result()
+	if err != nil {
+		return err
+	}
+	if d.Expire > 0 {
+		_, err = d.redis.Expire(d.Key, time.Duration(int64(d.Expire))*time.Second).Result()
+	}
 	return err
+}
+
+func (d *DbDataHelpCont) AddSet() error {
+	return nil
 }
