@@ -8,11 +8,13 @@ import (
 )
 
 type DbDataHelpModel struct {
-	DbNum  int    `json:"db_num"`
-	VType  string `json:"type"`
-	Key    string `json:"key"`
-	Val    string `json:"val"`
-	Expire int    `json:"expire"`
+	DbNum   int    `json:"db_num"`
+	VType   string `json:"type"`
+	Key     string `json:"key"`
+	Val     string `json:"val"`
+	Expire  int    `json:"expire"`
+	HashKey string `json:"hash_key,omitempty"`
+	Score   int    `json:"score,omitempty"`
 }
 
 type DbDataHelpCont struct {
@@ -57,6 +59,26 @@ func (d *DbDataHelpCont) AddList() error {
 
 func (d *DbDataHelpCont) AddSet() error {
 	_, err := d.redis.SAdd(d.Key, d.Val).Result()
+	if err != nil {
+		return err
+	}
+	return setExpire(d)
+}
+
+func (d *DbDataHelpCont) AddZSet() error {
+	zVal := redis.Z{
+		Score:  1,
+		Member: d.Val,
+	}
+	_, err := d.redis.ZAdd(d.Key, zVal).Result()
+	if err != nil {
+		return err
+	}
+	return setExpire(d)
+}
+
+func (d *DbDataHelpCont) AddHash() error {
+	_, err := d.redis.HSet(d.Key, d.HashKey, d.Val).Result()
 	if err != nil {
 		return err
 	}
