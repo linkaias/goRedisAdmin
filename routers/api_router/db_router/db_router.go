@@ -20,6 +20,8 @@ func (u DbDataRouter) InitRouter(group *gin.RouterGroup) (R gin.IRoutes) {
 
 		rou.POST("/key", cont.AddVal)
 
+		rou.DELETE("/flush", cont.Flush)
+
 	}
 	return rou
 }

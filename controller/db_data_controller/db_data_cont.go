@@ -23,6 +23,7 @@ type DbDataController interface {
 	GetKeys(ctx *gin.Context)
 	DelKey(ctx *gin.Context)
 	AddVal(ctx *gin.Context)
+	Flush(ctx *gin.Context)
 }
 
 func (c dbDataCont) DbList(ctx *gin.Context) {
@@ -81,6 +82,34 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 		data = append(data, temp)
 	}
 	c.Resp.RespSuccessWithData(data, ctx)
+}
+
+func (c dbDataCont) Flush(ctx *gin.Context) {
+	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
+	rd, err := global_redis.GetRedisClient(dbNum)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	defer rd.Close()
+	flushType := ctx.Query("type")
+	if flushType == "db" {
+		_, err = rd.FlushDB().Result()
+		if err != nil {
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+	} else if flushType == "all" {
+		_, err = rd.FlushAll().Result()
+		if err != nil {
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+	} else {
+		c.Resp.RespError("type is required", ctx)
+		return
+	}
+	c.Resp.RespSuccess(ctx)
 }
 
 // DelKey 删除key
