@@ -16,6 +16,8 @@ func (u DbDataRouter) InitRouter(group *gin.RouterGroup) (R gin.IRoutes) {
 
 		rou.GET("/get_keys", cont.GetKeys)
 
+		rou.GET("/get_val", cont.GetVal)
+
 		rou.DELETE("/key", cont.DelKey)
 
 		rou.POST("/key", cont.AddVal)

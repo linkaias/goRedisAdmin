@@ -49,6 +49,10 @@ func (d *DbDataHelpCont) AddString() error {
 	return err
 }
 
+func (d *DbDataHelpCont) GetString() (string, error) {
+	return d.redis.Get(d.Val).Result()
+}
+
 func (d *DbDataHelpCont) AddList() error {
 	_, err := d.redis.LPush(d.Key, d.Val).Result()
 	if err != nil {

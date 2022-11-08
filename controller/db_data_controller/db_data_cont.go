@@ -21,6 +21,7 @@ func NewDbDataController() DbDataController {
 type DbDataController interface {
 	DbList(ctx *gin.Context)
 	GetKeys(ctx *gin.Context)
+	GetVal(ctx *gin.Context)
 	DelKey(ctx *gin.Context)
 	AddVal(ctx *gin.Context)
 	Flush(ctx *gin.Context)
@@ -75,13 +76,40 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 		expire, _ := rd.TTL(key).Result()
 		expireS := expire.Seconds()
 		if expireS == -1 {
-			temp["expire_at"] = "长期"
+			temp["expire_at"] = "长期有效"
 		} else {
 			temp["expire_at"] = expire.String()
 		}
 		data = append(data, temp)
 	}
 	c.Resp.RespSuccessWithData(data, ctx)
+}
+
+// GetVal 获取详细的value
+func (c dbDataCont) GetVal(ctx *gin.Context) {
+	s := new(DbDataHelpModel)
+	err := ctx.ShouldBind(s)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	if s.VType == "" {
+		c.Resp.RespError("type is required", ctx)
+		return
+	}
+	cont, err := NewDbDataHelpController(s)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	defer cont.CloseClient()
+	res, err := handleGetVal(s.VType, cont)
+	if err != nil {
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	c.Resp.RespSuccessWithData(res, ctx)
+
 }
 
 func (c dbDataCont) Flush(ctx *gin.Context) {
@@ -175,4 +203,16 @@ func handleAddVal(valType string, cont *DbDataHelpCont) error {
 		return cont.AddHash()
 	}
 	return errors.New("type not supported ! ")
+}
+
+func handleGetVal(valType string, cont *DbDataHelpCont) (interface{}, error) {
+	switch valType {
+	case "string":
+		return cont.GetString()
+	case "list":
+	case "set":
+	case "zset":
+	case "hash":
+	}
+	return nil, errors.New("type not supported ! ")
 }
