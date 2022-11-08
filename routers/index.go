@@ -13,7 +13,7 @@ func RunApp() {
 	router := gin.New()
 
 	//访问图片资源使用，可删除
-	router.Static("/image", "./html/image")
+	router.Static("/image", "./image")
 
 	//登录限制
 	router.Use(middleware.HTTPAuthMiddleware())
