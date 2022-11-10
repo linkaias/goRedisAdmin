@@ -19,5 +19,4 @@ func init() {
 
 func Initialization() {
 	global_redis.SetRDConfig(IniRead.Section("redis"))
-
 }

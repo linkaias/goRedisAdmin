@@ -1,23 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/global/initData"
 	"goRedisAdmin/routers"
+	"goRedisAdmin/utils/log_utils"
 )
 
 func init() {
 	initData.Initialization()
 }
 
-func test() {
-	client, err := global_redis.GetRedisClient(1)
-	fmt.Println(err)
-	fmt.Println(client)
-}
-
 func main() {
-	//test()
+	//记录日志
+	log_utils.RunLog()
+	//run app
 	routers.RunApp()
 }

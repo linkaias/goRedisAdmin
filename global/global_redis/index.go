@@ -2,7 +2,6 @@ package global_redis
 
 import (
 	"errors"
-	"fmt"
 	"github.com/go-redis/redis"
 	"gopkg.in/ini.v1"
 )
@@ -25,7 +24,6 @@ func SetRDConfig(config *ini.Section) {
 	cfg.Pwd = config.Key("pwd").String()
 	cfg.Timeout, _ = config.Key("timeout").Int()
 	cfg.DoTimeout, _ = config.Key("do_timeout").Int()
-	fmt.Println(cfg)
 }
 
 func GetRedisClient(db int) (*redis.Client, error) {
