@@ -17,6 +17,7 @@
 /.idea/*
 
 # Vue Web
-/web
-/web/*
+/web/node_modules
+/web/.idea
+/web/开发计划.txt
 
