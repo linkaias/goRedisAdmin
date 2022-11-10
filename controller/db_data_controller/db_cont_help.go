@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/go-redis/redis"
 	"goRedisAdmin/global/global_redis"
+	"goRedisAdmin/utils/log_utils"
 	"time"
 )
 
@@ -30,6 +31,7 @@ func NewDbDataHelpController(v *DbDataHelpModel) (*DbDataHelpCont, error) {
 	cont.DbDataHelpModel = *v
 	rd, err := cont.getRedisClient()
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		return nil, err
 	}
 	cont.redis = rd

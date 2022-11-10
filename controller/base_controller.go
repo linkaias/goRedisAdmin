@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
 	"goRedisAdmin/global/global_response"
+	"goRedisAdmin/utils/log_utils"
 	"io"
 	"strconv"
 )
@@ -20,6 +21,7 @@ func (b *BaseController) BaseInit() {
 func (b *BaseController) JSONToStruct(jsonStr string, obj interface{}) error {
 	err := json.Unmarshal([]byte(jsonStr), obj)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		return err
 	}
 	return nil
@@ -30,6 +32,7 @@ func (b *BaseController) GetBodyByRequest(ctx *gin.Context) ([]byte, error) {
 	body := make([]byte, ctx.Request.ContentLength)
 	_, err := ctx.Request.Body.Read(body)
 	if err != nil && err != io.EOF {
+		log_utils.WriteLog("err", err, nil)
 		return nil, err
 	}
 	return body, nil

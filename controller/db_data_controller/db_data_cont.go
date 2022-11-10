@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"goRedisAdmin/controller"
 	"goRedisAdmin/global/global_redis"
+	"goRedisAdmin/utils/log_utils"
 )
 
 type dbDataCont struct {
@@ -31,7 +32,10 @@ func (c dbDataCont) DbList(ctx *gin.Context) {
 	data := make([]map[string]interface{}, 0)
 	for i := 0; i < 16; i++ {
 		temp := make(map[string]interface{})
-		num, _ := getDbKeyLen(i)
+		num, err := getDbKeyLen(i)
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+		}
 		temp["db_num"] = i
 		temp["keys_len"] = num
 		temp["show_name"] = fmt.Sprintf("Db%v", i)
@@ -55,6 +59,7 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
@@ -90,6 +95,7 @@ func (c dbDataCont) GetVal(ctx *gin.Context) {
 	s := new(DbDataHelpModel)
 	err := ctx.ShouldBind(s)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
@@ -99,12 +105,14 @@ func (c dbDataCont) GetVal(ctx *gin.Context) {
 	}
 	cont, err := NewDbDataHelpController(s)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
 	defer cont.CloseClient()
 	res, err := handleGetVal(s.VType, cont)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
@@ -116,6 +124,7 @@ func (c dbDataCont) Flush(ctx *gin.Context) {
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
@@ -124,12 +133,14 @@ func (c dbDataCont) Flush(ctx *gin.Context) {
 	if flushType == "db" {
 		_, err = rd.FlushDB().Result()
 		if err != nil {
+			log_utils.WriteLog("err", err, nil)
 			c.Resp.RespError(err.Error(), ctx)
 			return
 		}
 	} else if flushType == "all" {
 		_, err = rd.FlushAll().Result()
 		if err != nil {
+			log_utils.WriteLog("err", err, nil)
 			c.Resp.RespError(err.Error(), ctx)
 			return
 		}
@@ -146,6 +157,7 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
@@ -157,6 +169,7 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 	}
 	_, err = rd.Del(key).Result()
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
@@ -168,6 +181,7 @@ func (c dbDataCont) AddVal(ctx *gin.Context) {
 	s := new(DbDataHelpModel)
 	err := ctx.ShouldBind(s)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
@@ -177,12 +191,14 @@ func (c dbDataCont) AddVal(ctx *gin.Context) {
 	}
 	cont, err := NewDbDataHelpController(s)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
 	defer cont.CloseClient()
 	err = handleAddVal(s.VType, cont)
 	if err != nil {
+		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
