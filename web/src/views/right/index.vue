@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-page-header >
+    <el-page-header>
       <template v-slot:title>
         首页
       </template>
@@ -14,15 +14,13 @@
     right
   </div>
 </template>
-
 <script>
 export default {
   name: "rightContent"
 }
 </script>
-
-<style >
-.el-page-header i{
+<style>
+.el-page-header i {
   display: none;
 }
 </style>

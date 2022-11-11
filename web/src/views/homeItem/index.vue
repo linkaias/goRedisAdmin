@@ -84,7 +84,6 @@
                   label="类型"
                   width="100">
               </el-table-column>
-
               <el-table-column
                   width="200"
                   align="center"
@@ -100,7 +99,6 @@
                                icon="el-icon-delete"></el-button>
                   </el-popconfirm>
                 </template>
-
               </el-table-column>
             </el-table>
             <el-pagination style="margin-top: 10px;text-align: center"
@@ -117,16 +115,12 @@
         </el-card>
       </el-col>
     </el-row>
-
-
     <el-dialog :title="'提示：当前数据库：'+activeDb.show_name" :visible.sync="activeForm" :close-on-click-modal="false"
                :close-on-press-escape="false" :show-close="false" :destroy-on-close="true">
       <FormPage ref="p_form" @closeForm="closeForm"></FormPage>
     </el-dialog>
-
   </div>
 </template>
-
 <script>
 import FormPage from "./form_page"
 
@@ -155,7 +149,6 @@ export default {
   },
   methods: {
     handleEdit(row) {
-      console.log(row)
     },
     handleFlush(type) {
       let msg = type === "all" ? "全部数据库" : "数据库" + this.activeDb.db_num + "的全部"
@@ -172,9 +165,7 @@ export default {
           this.$message.error(res.message)
         }
       }).catch(() => {
-
       });
-
     },
     showForm(info) {
       this.activeForm = true
@@ -241,7 +232,6 @@ export default {
   },
 }
 </script>
-
 <style scoped>
 .db_son {
   list-style: none;

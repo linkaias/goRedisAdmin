@@ -23,14 +23,12 @@
           </el-form-item>
         </el-col>
       </el-row>
-
       <el-form-item v-if="formData.type==='zset'" prop="" label="Score">
         <el-input style="width: 82%" v-model="formData.score" placeholder="请输入score" type="number"></el-input>
       </el-form-item>
       <el-form-item v-if="formData.type==='hash'" prop="hash_key" label="键名">
         <el-input style="width: 82%" v-model="formData.hash_key" placeholder="请输入键名"></el-input>
       </el-form-item>
-
       <el-form-item label="值">
         <el-input type="textarea" v-model="formData.val" rows="6" placeholder="请输入值～"></el-input>
       </el-form-item>
@@ -41,7 +39,6 @@
     </el-form>
   </div>
 </template>
-
 <script>
 import {cloneDeep} from "lodash";
 
@@ -63,9 +60,6 @@ export default {
       dbName: 0,
       formData: {}
     }
-  },
-  mounted() {
-
   },
   methods: {
     initData(dbNum, info) {
@@ -105,7 +99,6 @@ export default {
           this.$message.success(res.message)
           this.closeAndReload()
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
@@ -113,7 +106,5 @@ export default {
   }
 }
 </script>
-
 <style scoped>
-
 </style>

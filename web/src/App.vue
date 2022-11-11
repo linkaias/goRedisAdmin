@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <el-container>
       <el-header>
         <HeaderItem></HeaderItem>
@@ -12,17 +12,16 @@
 </template>
 <script>
 import HeaderItem from "@/views/header"
+
 export default {
   name: 'App',
-  components:{
+  components: {
     HeaderItem
   }
 }
 </script>
-
 <style>
-body{
+body {
   margin: 0;
 }
-
 </style>
