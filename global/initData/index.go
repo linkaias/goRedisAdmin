@@ -1,7 +1,6 @@
 package initData
 
 import (
-	"errors"
 	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/global/global_write_ip"
 	"gopkg.in/ini.v1"
@@ -28,12 +27,10 @@ func Initialization() {
 
 func initWriteListIp(config *ini.Section) {
 	ips := config.Key("allow_ip").String()
-	if ips == "" {
-		panic(errors.New("ip白名单为空"))
-	}
-	ipStr := strings.Split(strings.TrimSpace(ips), ",")
-	global_write_ip.WriteListIp = make(map[string]string)
-	for _, ip := range ipStr {
-		global_write_ip.WriteListIp[ip] = ip
+	if ips != "" {
+		ipStr := strings.Split(strings.TrimSpace(ips), ",")
+		for _, ip := range ipStr {
+			global_write_ip.WriteListIp[ip] = ip
+		}
 	}
 }

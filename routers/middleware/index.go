@@ -27,12 +27,14 @@ func HTTPAuthMiddleware() gin.HandlerFunc {
 
 func IpCheckMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ip := c.ClientIP()
-		_, ok := global_write_ip.WriteListIp[ip]
-		if !ok {
-			c.JSON(http.StatusBadGateway, "illegal ip!")
-			c.Abort()
-			return
+		if len(global_write_ip.WriteListIp) > 0 {
+			ip := c.ClientIP()
+			_, ok := global_write_ip.WriteListIp[ip]
+			if !ok {
+				c.JSON(http.StatusBadGateway, "illegal ip!")
+				c.Abort()
+				return
+			}
 		}
 		// 请求前
 		c.Next()
