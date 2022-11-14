@@ -2,7 +2,6 @@ package initData
 
 import (
 	"errors"
-	"fmt"
 	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/global/global_write_ip"
 	"gopkg.in/ini.v1"
@@ -25,7 +24,6 @@ func Initialization() {
 	global_redis.SetRDConfig(IniRead.Section("redis"))
 	//白名单
 	initWriteListIp(IniRead.Section("whitelist_ip"))
-	fmt.Println(global_write_ip.WriteListIp)
 }
 
 func initWriteListIp(config *ini.Section) {
