@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"goRedisAdmin/global/global_write_ip"
 	"goRedisAdmin/global/initData"
 	"net/http"
 )
@@ -21,6 +22,20 @@ func HTTPAuthMiddleware() gin.HandlerFunc {
 			http.Error(ctx.Writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			ctx.Abort()
 		}
+	}
+}
 
+func IpCheckMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ip := c.ClientIP()
+		_, ok := global_write_ip.WriteListIp[ip]
+		if !ok {
+			c.JSON(http.StatusBadGateway, "illegal ip!")
+			c.Abort()
+			return
+		}
+		// 请求前
+		c.Next()
+		// 请求后
 	}
 }
