@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-container>
-      <el-header>
+      <el-header class="el-header">
         <HeaderItem></HeaderItem>
       </el-header>
       <el-main>

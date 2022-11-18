@@ -6,7 +6,9 @@ export default [
     {
         path: "/home",
         component: () => import("@/views/homeItem"),
-        meta: {show: true},
+    },
+    {
+        path: "/login",
+        component: () => import("@/views/login"),
     }
-
 ]
