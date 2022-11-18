@@ -18,8 +18,9 @@ type routerGroup struct {
 func RunApiRouter(r *gin.RouterGroup) {
 	r.Use(middleware.IpCheckMiddleware())
 	gp := r.Group("api/v1")
-	EnterRouter.DbRouterGroup.DbDataRouter.InitRouter(gp)
-
 	EnterRouter.UserRouterGroup.UserDataRouter.InitRouter(gp)
+
+	gp.Use(middleware.AuthorizeJWT())
+	EnterRouter.DbRouterGroup.DbDataRouter.InitRouter(gp)
 
 }

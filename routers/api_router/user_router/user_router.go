@@ -11,7 +11,7 @@ func (u UserDataRouter) InitRouter(group *gin.RouterGroup) (R gin.IRoutes) {
 	cont := user_controller.NewUserController()
 	rou := group.Group("user")
 	{
-		rou.GET("/login", cont.Login)
+		rou.POST("/login", cont.Login)
 
 		rou.GET("/logout", cont.Logout)
 
