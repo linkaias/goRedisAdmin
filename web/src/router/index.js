@@ -3,6 +3,7 @@ import Vue from "vue"
 
 import VueRouter from "vue-router"
 import routes from "@/router/routes";
+import {GetToken} from "@/utils/token";
 //使用插件
 Vue.use(VueRouter);
 
@@ -40,37 +41,21 @@ let router = new VueRouter({
 })
 
 //全局守卫，前置守卫
-/*
 router.beforeEach(async function (to, from, next) {
-
-    let token = store.state.user.token;
+    let token = GetToken();
+    console.log("token:", token)
     if (token) {//已经登录
-        if (to.path === "/login" || to.path === "/register") {
+        if (to.path === "/login") {
             next("/");
-        } else {
-            let name = store.state.user.userInfo.name;
-            if (name) { //已经有登录数据
-                next();
-            } else {//重新获取登录数据
-                try {
-                    await store.dispatch("GetUserInfo")
-                    next();
-                } catch (e) {
-                    //token失效，退出登录
-                    await store.dispatch("Logout")
-                    next("/login");
-                }
-            }
-        }
-    } else {
-        let path = to.path;
-        if (path.indexOf("/trade") !== -1 || path.indexOf("/pay") !== -1 || path.indexOf("/center") !== -1) {
-            next("/login?redirect=" + path);
         }
         next();
+    } else {
+        if (to.path !== "/login") {
+            next("/login");
+        }
+        next()
     }
-    next();
-})*/
+})
 
 //配置路由
 export default router;

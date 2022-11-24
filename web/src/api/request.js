@@ -1,6 +1,7 @@
 //对于axios进行二次封装
 import axios from "axios";
 import {Message} from 'element-ui'
+import {GetToken} from "@/utils/token";
 
 //底下的代码也是创建axios实例
 let requests = axios.create({
@@ -11,8 +12,8 @@ let requests = axios.create({
 
 //请求拦截器----在项目中发请求（请求没有发出去）可以做一些事情
 requests.interceptors.request.use((config) => {
-    config.headers.Authorization = "Basic YWRtaW46MTIzNDU2";
-    return config;
+    config.headers['Authorization'] = 'Bearer ' + GetToken()
+    return config
 });
 
 //响应拦截器----当服务器手动请求之后，做出响应（相应成功）会执行的

@@ -23,7 +23,7 @@
             <a href="https://github.com/linkaias/goRedisAdmin" target="_blank">文档</a>
           </el-menu-item>
           <el-menu-item index="5">
-            <a target="_blank"> 退出登录</a>
+            <a target="_blank" @click="logout"> 退出登录</a>
           </el-menu-item>
         </el-menu>
       </el-col>
@@ -31,11 +31,17 @@
   </div>
 </template>
 <script>
+import {RemoveToken} from "@/utils/token";
+
 export default {
   name: "HeaderItem",
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
+    },
+    logout() {
+      RemoveToken()
+      location.reload()
     }
   }
 }

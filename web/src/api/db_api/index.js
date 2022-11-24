@@ -26,3 +26,10 @@ export const reqFlush = (type, db) => request({
     url: `/db/flush?type=${type}&db_num=${db}`,
     method: "delete",
 })
+
+
+export const reqLogin = (data) => request({
+    url: `/user/login`,
+    method: "post",
+    data
+})

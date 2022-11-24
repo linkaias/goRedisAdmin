@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import {SetToken} from "@/utils/token";
+
 export default {
   name: "login",
   data() {
@@ -47,20 +49,30 @@ export default {
     }
   },
   methods: {
-    login() {
+    async login() {
       if (this.user === "" || this.pwd === "") {
         this.$message.error("用户或密码不能为空！")
         return false
       }
-      this.showLogin = true
-      setTimeout(() => {
-        this.showButton = true
-      }, 2200)
+      //请求
+      let data = {
+        "user": this.user,
+        "pwd": this.pwd
+      }
+      let res = await this.$API.dbApi.reqLogin(data)
+      if (res.code === 0) {
+        this.showLogin = true
+        SetToken(res.data)
+        setTimeout(() => {
+          this.showButton = true
+          location.reload()
+        }, 1200)
+      }
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 @import "./css/index.css";
 </style>
