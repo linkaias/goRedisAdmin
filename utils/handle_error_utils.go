@@ -25,4 +25,5 @@ func HandleError(err error, level int, descErrorType int, args ...interface{}) {
 	fmt.Printf("%s\t%v%v\n", time.Now().Format("2006-01-02 15:04:05"), err, args)
 
 	//按错误类别处理...
+
 }
