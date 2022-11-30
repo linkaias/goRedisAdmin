@@ -208,6 +208,9 @@ export default {
       this.leftLoading = true
       let res = await this.$API.dbApi.reqGetDbList()
       this.dbInfo = res.data
+      if (this.dbInfo.length > 0) {
+        this.activeDb = this.dbInfo[0]
+      }
       this.leftLoading = false
     },
     async getKeysByDb(num) {
