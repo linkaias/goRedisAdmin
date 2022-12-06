@@ -26,6 +26,7 @@ type DbDataController interface {
 	DelKey(ctx *gin.Context)
 	AddVal(ctx *gin.Context)
 	Flush(ctx *gin.Context)
+	GetValByKey(ctx *gin.Context)
 }
 
 func (c dbDataCont) DbList(ctx *gin.Context) {
@@ -203,6 +204,46 @@ func (c dbDataCont) AddVal(ctx *gin.Context) {
 		return
 	}
 	c.Resp.RespSuccess(ctx)
+}
+
+// GetValByKey 获取数据通过key
+func (c dbDataCont) GetValByKey(ctx *gin.Context) {
+	//default value is 0
+	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
+	rd, err := global_redis.GetRedisClient(dbNum)
+	if err != nil {
+		log_utils.WriteLog("err", err, nil)
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	defer rd.Close()
+	type GetValByKeyStruct struct {
+		Key   string `json:"key"`
+		DType string `json:"type"`
+	}
+	s := new(GetValByKeyStruct)
+	err = ctx.ShouldBind(s)
+	if err != nil {
+		log_utils.WriteLog("err", err, nil)
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	if s.Key == "" || s.DType == "" {
+		c.Resp.RespError("type or key  is required", ctx)
+		return
+	}
+	if s.DType == "string" {
+		result, err := rd.Get(s.Key).Result()
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+		c.Resp.RespSuccessWithData(result, ctx)
+		return
+	}
+
+	c.Resp.RespSuccessWithData(nil, ctx)
 }
 
 func handleAddVal(valType string, cont *DbDataHelpCont) error {
