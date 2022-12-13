@@ -33,3 +33,10 @@ export const reqLogin = (data) => request({
     method: "post",
     data
 })
+
+
+export const reqGetValueByKey = (dbNum, data) => request({
+    url: `/db/get_val_by_key?db_num=${dbNum}`,
+    method: "post",
+    data
+})

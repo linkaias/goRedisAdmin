@@ -2,12 +2,12 @@
   <div>
     <el-form ref="form_son" :rules="rules" :model="formData" label-width="80px">
       <el-form-item prop="key" label="键名">
-        <el-input style="width: 82%" v-model="formData.key" placeholder="请输入键名～"></el-input>
+        <el-input :disabled="formData.id>0" style="width: 82%" v-model="formData.key" placeholder="请输入键名～"></el-input>
       </el-form-item>
       <el-row>
         <el-col :span="12">
           <el-form-item prop="type" label="类型">
-            <el-select v-model="formData.type" placeholder="请选择数据类型">
+            <el-select :disabled="formData.id>0" v-model="formData.type" placeholder="请选择数据类型">
               <el-option label="string" value="string"></el-option>
               <el-option label="list" value="list"></el-option>
               <el-option label="set" value="set"></el-option>

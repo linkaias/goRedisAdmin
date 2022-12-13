@@ -89,8 +89,10 @@
                   align="center"
                   label="操作">
                 <template v-slot:default="{row}">
-                  <el-button @click="handleEdit(row)" type="primary" plain size="mini"
-                             icon="el-icon-edit-outline"></el-button>
+                  <!--                  <el-button @click="handleEdit(row)" type="primary" plain size="mini"
+                                               icon="el-icon-edit-outline"></el-button>-->
+                  <el-button @click="viewData(row)" type="primary" plain size="mini"
+                             icon="el-icon-info"></el-button>
                   <el-popconfirm
                       :title="'确定删除 ['+row.key+'] 吗？'"
                       @confirm="delKey(row.key)"
@@ -119,15 +121,22 @@
                :close-on-press-escape="false" :show-close="false" :destroy-on-close="true">
       <FormPage ref="p_form" @closeForm="closeForm"></FormPage>
     </el-dialog>
+
+    <el-dialog title="查看数据" :visible.sync="activeData" :close-on-click-modal="false"
+               :close-on-press-escape="false" :show-close="false" :destroy-on-close="true">
+      <DataPage ref="p_data" @closeData="closeData"></DataPage>
+    </el-dialog>
   </div>
 </template>
 <script>
 import FormPage from "./form_page"
+import DataPage from "./data"
 
 export default {
   name: "homeItem",
   components: {
-    FormPage
+    FormPage,
+    DataPage
   },
   data() {
     return {
@@ -140,7 +149,8 @@ export default {
       total: 0,//all total
       leftLoading: false,
       rightLoading: false,
-      activeForm: false
+      activeForm: false,
+      activeData: false
     }
   },
   mounted() {
@@ -148,7 +158,15 @@ export default {
     this.getKeysByDb()
   },
   methods: {
+    viewData(row) {
+      this.activeData = true
+      this.$nextTick(() => {
+        this.$refs.p_data.initData(this.activeDb.db_num, row)
+      })
+    },
+
     handleEdit(row) {
+      this.showForm(row)
     },
     handleFlush(type) {
       let msg = type === "all" ? "全部数据库" : "数据库" + this.activeDb.db_num + "的全部"
@@ -170,7 +188,6 @@ export default {
     showForm(info) {
       this.activeForm = true
       this.$nextTick(() => {
-        console.log(this.activeDb.db_num)
         this.$refs.p_form.initData(this.activeDb.db_num, info)
       })
     },
@@ -179,6 +196,9 @@ export default {
       if (type === 2) { //筛选页面
         await this.reload()
       }
+    },
+    async closeData() {
+      this.activeData = false
     },
     async delKey(key) {
       let res = await this.$API.dbApi.reqDelKey(this.activeDb.db_num, key)
