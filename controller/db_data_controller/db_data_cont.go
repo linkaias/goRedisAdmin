@@ -242,6 +242,23 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 		c.Resp.RespSuccessWithData(result, ctx)
 		return
 	}
+	if s.DType == "hash" {
+		strings, cursor, err := rd.HScan(s.Key, 0, "*", 2).Result()
+		fmt.Println("result:", strings, cursor)
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+		data, err := descHashPageData(strings)
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+		c.Resp.RespSuccessWithData(data, ctx)
+		return
+	}
 
 	c.Resp.RespSuccessWithData(nil, ctx)
 }
@@ -272,4 +289,34 @@ func handleGetVal(valType string, cont *DbDataHelpCont) (interface{}, error) {
 	case "hash":
 	}
 	return nil, errors.New("type not supported ! ")
+}
+
+func descHashPageData(wait []string) ([]map[string]string, error) {
+	if !isPageOk(len(wait)) {
+		return nil, errors.New("数据异常！")
+	}
+	res := make([]map[string]string, 0)
+	tempKey, temVal := -1, ""
+	for i, val := range wait {
+		if tempKey > -1 {
+			res = append(res, map[string]string{
+				temVal: val,
+			})
+			tempKey = -1
+			continue
+		}
+		temVal = val
+		tempKey = i
+	}
+	return res, nil
+}
+
+func isPageOk(num int) bool {
+	intRes := num / 2
+	floatRes := float64(num) / 2.0
+	if float64(intRes) == floatRes {
+		return true
+	} else {
+		return false
+	}
 }

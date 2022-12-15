@@ -59,6 +59,7 @@
 
         </el-card>
         <el-card v-loading="rightLoading" style="margin-top: 10px;min-height: 700px">
+          <el-skeleton v-show="rightLoading" :rows="12"/>
           <div v-show="activeDb.show_name">
             <el-table
                 :data="pageData"
@@ -150,7 +151,8 @@ export default {
       leftLoading: false,
       rightLoading: false,
       activeForm: false,
-      activeData: false
+      activeData: false,
+
     }
   },
   mounted() {
