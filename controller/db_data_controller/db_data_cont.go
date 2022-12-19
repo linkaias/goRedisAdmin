@@ -243,8 +243,10 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 		return
 	}
 	if s.DType == "hash" {
-		strings, cursor, err := rd.HScan(s.Key, 0, "*", 2).Result()
-		fmt.Println("result:", strings, cursor)
+		//default value is 0
+		cursorNum, _ := c.ParamToInt(ctx, "cursor", "get")
+		filter := ctx.Query("filter")
+		strings, cursor, err := rd.HScan(s.Key, uint64(cursorNum), filter, 100).Result()
 		if err != nil {
 			log_utils.WriteLog("err", err, nil)
 			c.Resp.RespError(err.Error(), ctx)
@@ -256,7 +258,19 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 			c.Resp.RespError(err.Error(), ctx)
 			return
 		}
-		c.Resp.RespSuccessWithData(data, ctx)
+
+		count, err := rd.HLen(s.Key).Result()
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+
+		c.Resp.RespSuccessWithData(gin.H{
+			"data":   data,
+			"count":  count,
+			"cursor": cursor,
+		}, ctx)
 		return
 	}
 
@@ -295,7 +309,7 @@ func descHashPageData(wait []string) ([]map[string]string, error) {
 	if !isPageOk(len(wait)) {
 		return nil, errors.New("数据异常！")
 	}
-	res := make([]map[string]string, 0)
+	res, last := make([]map[string]string, 0), make([]map[string]string, 0)
 	tempKey, temVal := -1, ""
 	for i, val := range wait {
 		if tempKey > -1 {
@@ -308,7 +322,16 @@ func descHashPageData(wait []string) ([]map[string]string, error) {
 		temVal = val
 		tempKey = i
 	}
-	return res, nil
+	//二次处理
+	for _, temp := range res {
+		for key, val := range temp {
+			last = append(last, map[string]string{
+				"key":   key,
+				"value": val,
+			})
+		}
+	}
+	return last, nil
 }
 
 func isPageOk(num int) bool {

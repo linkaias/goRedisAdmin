@@ -1,22 +1,23 @@
 <template>
   <div>
-    <el-card v-if="nowInfo.type==='hash'|| nowInfo.type==='list'">
+    <el-card v-if="nowInfo.type==='hash'">
       <el-table
-          :data="[]"
-          style="width: 100%">
+          :data="data"
+          style="width: 100%;max-height: 600px;overflow-y: auto">
         <el-table-column
-            prop="date"
-            label="日期"
-            width="180">
+            type="index"
+            width="50">
+        </el-table-column>
+
+        <el-table-column
+            prop="key"
+            label="Key"
+        >
         </el-table-column>
         <el-table-column
-            prop="name"
-            label="姓名"
-            width="180">
-        </el-table-column>
-        <el-table-column
-            prop="address"
-            label="地址">
+            prop="value"
+            label="值"
+        >
         </el-table-column>
       </el-table>
     </el-card>
@@ -40,7 +41,9 @@ export default {
     return {
       dbNum: -1,
       nowInfo: {},
-      result: {}
+      data: [],
+      cursor: 0,
+      count: 0,
     }
   },
   methods: {
@@ -59,7 +62,9 @@ export default {
       }
       let res = await this.$API.dbApi.reqGetValueByKey(this.dbNum, data)
       if (res.code === 0) {
-        this.result = res.data
+        this.data = res.data.data
+        this.cursor = res.data.cursor
+        this.count = res.data.count
       }
     }
   }

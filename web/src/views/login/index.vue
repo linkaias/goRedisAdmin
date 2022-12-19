@@ -44,8 +44,8 @@ export default {
     return {
       showLogin: false,
       showButton: false,
-      user: "",
-      pwd: "",
+      user: "admin",  // 部署后请设置为空：user: ""
+      pwd: "123456",  // 部署后请设置为空：pwd: ""
     }
   },
   methods: {
