@@ -8,7 +8,6 @@
             type="index"
             width="50">
         </el-table-column>
-
         <el-table-column
             prop="key"
             label="Key"
