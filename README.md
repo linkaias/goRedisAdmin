@@ -60,11 +60,12 @@ go mod tidy
 go run main.go
 ```
 
-浏览器访问 http://127.0.0.1:9527
+部署完成后本地浏览器访问 http://127.0.0.1:9527
 
 ## Online Demo
 
-[在线 Demo](http://gradmin.uiucode.com/#/home)
+[在线 Demo](http://gradmin.uiucode.com/#/login)
+[Online Demo](http://gradmin.uiucode.com/#/login)
 
 ## License
 
