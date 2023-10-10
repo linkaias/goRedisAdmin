@@ -50,8 +50,10 @@ router.beforeEach(async function (to, from, next) {
         }
         next();
     } else {
+        console.log(11,to)
         if (to.path !== "/login") {
             next("/login");
+            return
         }
         next()
     }
