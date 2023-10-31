@@ -7,7 +7,7 @@
 [go-redis-admin](https://github.com/linkaias/goRedisAdmin)
 是一款使用golang和vue2开发的Redis的后台管理平台，它包含了在线的数据库管理和简洁的操作界面，旨在方便用户管理redis数据。
 
-- [在线预览](http://gradmin.uiucode.com/) 用户名：admin 密码：123456
+- [在线预览](http://gradmin.uiucode.com/#/login) 用户名：admin 密码：123456
 
 - [使用文档](https://github.com/linkaias/goRedisAdmin)
 
