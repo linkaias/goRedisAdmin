@@ -7,6 +7,7 @@ import (
 	"goRedisAdmin/controller"
 	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/utils/log_utils"
+	"time"
 )
 
 type dbDataCont struct {
@@ -27,6 +28,8 @@ type DbDataController interface {
 	AddVal(ctx *gin.Context)
 	Flush(ctx *gin.Context)
 	GetValByKey(ctx *gin.Context)
+	// ExpireKey 修改key的过期时间
+	ExpireKey(ctx *gin.Context)
 }
 
 func (c dbDataCont) DbList(ctx *gin.Context) {
@@ -177,6 +180,36 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 	c.Resp.RespSuccess(ctx)
 }
 
+// ExpireKey 修改key的过期时间
+func (c dbDataCont) ExpireKey(ctx *gin.Context) {
+	//default db is 0
+	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
+	expireInt, _ := c.ParamToInt(ctx, "expire", "get")
+	rd, err := global_redis.GetRedisClient(dbNum)
+	if err != nil {
+		log_utils.WriteLog("err", err, nil)
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	defer rd.Close()
+	key := ctx.Query("key")
+	if key == "" {
+		c.Resp.RespError("key is required", ctx)
+		return
+	}
+	if expireInt == 0 { // 设置无过期时间
+		rd.Persist(key)
+	} else { // 设置过期时间
+		_, err = rd.Expire(key, time.Duration(expireInt)*time.Second).Result()
+	}
+	if err != nil {
+		log_utils.WriteLog("err", err, nil)
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	c.Resp.RespSuccess(ctx)
+}
+
 // AddVal 新增键值
 func (c dbDataCont) AddVal(ctx *gin.Context) {
 	s := new(DbDataHelpModel)
@@ -266,11 +299,13 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 			return
 		}
 
-		c.Resp.RespSuccessWithData(gin.H{
-			"data":   data,
-			"count":  count,
-			"cursor": cursor,
-		}, ctx)
+		c.Resp.RespSuccessWithData(
+			gin.H{
+				"data":   data,
+				"count":  count,
+				"cursor": cursor,
+			}, ctx,
+		)
 		return
 	}
 
@@ -313,9 +348,11 @@ func descHashPageData(wait []string) ([]map[string]string, error) {
 	tempKey, temVal := -1, ""
 	for i, val := range wait {
 		if tempKey > -1 {
-			res = append(res, map[string]string{
-				temVal: val,
-			})
+			res = append(
+				res, map[string]string{
+					temVal: val,
+				},
+			)
 			tempKey = -1
 			continue
 		}
@@ -325,10 +362,12 @@ func descHashPageData(wait []string) ([]map[string]string, error) {
 	//二次处理
 	for _, temp := range res {
 		for key, val := range temp {
-			last = append(last, map[string]string{
-				"key":   key,
-				"value": val,
-			})
+			last = append(
+				last, map[string]string{
+					"key":   key,
+					"value": val,
+				},
+			)
 		}
 	}
 	return last, nil
