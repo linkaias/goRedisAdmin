@@ -40,3 +40,8 @@ export const reqGetValueByKey = (dbNum, data) => request({
     method: "post",
     data
 })
+
+export const reqExpireKey = (dbNum,expire,key) => request({
+    url: `/db/key/expire?db_num=${dbNum}&expire=${expire}&key=${key}`,
+    method: "post",
+})

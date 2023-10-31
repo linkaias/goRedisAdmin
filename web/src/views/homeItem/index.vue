@@ -94,6 +94,8 @@
                                                icon="el-icon-edit-outline"></el-button>-->
                   <el-button @click="viewData(row)" type="primary" plain size="mini"
                              icon="el-icon-info"></el-button>
+                  <el-button @click="expireKey(row)" type="primary" plain size="mini"
+                             icon="el-icon-time"></el-button>
                   <el-popconfirm
                       :title="'确定删除 ['+row.key+'] 吗？'"
                       @confirm="delKey(row.key)"
@@ -165,6 +167,23 @@ export default {
       this.$nextTick(() => {
         this.$refs.p_data.initData(this.activeDb.db_num, row)
       })
+    },
+
+    expireKey(row){
+      this.$prompt('请输入过期时间（秒）', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(async ({value}) => {
+        let res = await this.$API.dbApi.reqExpireKey( this.activeDb.db_num,value,row.key);
+        if (res.code === 0) {
+          this.$message.success(res.message)
+          await this.reload()
+        } else {
+          this.$message.error(res.message)
+        }
+      }).catch(() => {
+      });
+      console.log(row)
     },
 
     handleEdit(row) {
