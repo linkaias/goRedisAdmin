@@ -67,6 +67,15 @@ go run main.go
 [在线 Demo](http://gradmin.uiucode.com/#/login)
 [Online Demo](http://gradmin.uiucode.com/#/login)
 
+## JetBrains open source certificate support
+
+The GoRedisAdmin project has always been developed in the GoLand integrated development environment under JetBrains,
+based on the free JetBrains Open Source license(s) genuine free license. I would like to express my gratitude.
+
+<a href="https://www.jetbrains.com/">
+<img src="https://raw.githubusercontent.com/panjf2000/illustrations/master/jetbrains/jetbrains-variant-4.png" width="250" />
+</a>
+
 ## License
 
 [MIT](https://github.com/linkaias/goRedisAdmin/blob/main/LICENSE)
