@@ -11,25 +11,33 @@ import (
 	"time"
 )
 
-//AuthorizeJWT -> to authorize JWT Token 校验jwt token
+// AuthorizeJWT -> to authorize JWT Token 校验jwt token
 func AuthorizeJWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		resp := new(global_response.Response)
 		const BearerSchema string = "Bearer "
 		authHeader := strings.TrimSpace(ctx.GetHeader("Authorization"))
 		if authHeader == "" || len(authHeader) <= 7 {
-			resp.RespError("Authorization Bearer Token is empty!", ctx)
+			//resp.RespError("Authorization Bearer Token is empty!", ctx)
+			resp.Response(
+				global_response.NoLOGIN, "Authorization Bearer Token is empty!", map[string]interface{}{}, ctx,
+			)
 			ctx.Abort()
 			return
 		}
 		tokenString := authHeader[len(BearerSchema):]
 		if token, err := utils.BCYValidateToken(tokenString); err != nil {
-			resp.RespError("Token 无效!", ctx)
+			resp.Response(
+				global_response.NoLOGIN, "Token 无效!", map[string]interface{}{}, ctx,
+			)
 			ctx.Abort()
 			return
 		} else {
 			if claims, ok := token.Claims.(jwt.MapClaims); !ok {
-				resp.RespError("Unauthorized!", ctx)
+				//resp.RespError("Unauthorized!", ctx)
+				resp.Response(
+					global_response.NoLOGIN, "Token 无效!Unauthorized", map[string]interface{}{}, ctx,
+				)
 				ctx.Abort()
 				return
 			} else {
@@ -48,7 +56,10 @@ func AuthorizeJWT() gin.HandlerFunc {
 					}
 					ctx.Set("user", claims["user"])
 				} else {
-					resp.RespError("Unauthorized!", ctx)
+					//resp.RespError("Unauthorized!", ctx)
+					resp.Response(
+						global_response.NoLOGIN, "Token 无效!Unauthorized", map[string]interface{}{}, ctx,
+					)
 					ctx.Abort()
 					return
 				}

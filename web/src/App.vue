@@ -12,7 +12,6 @@
 </template>
 <script>
 import HeaderItem from "@/views/header"
-
 export default {
   name: 'App',
   components: {

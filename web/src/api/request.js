@@ -21,11 +21,23 @@ requests.interceptors.response.use(
     response => {
         let res = response.data
         if (res.code !== 0 && res.code !== 200) {
-            Message({
-                message: res.message || 'Error',
-                type: 'error',
-                duration: 5 * 1000
-            })
+
+            if (res.code == 6){
+                Message({
+                    message: '登录无效，请重新登录',
+                    type: 'error',
+                    duration: 5 * 1000
+                })
+                setTimeout(function () {
+                    window.location.href = '/#/login'; // 或者使用路由导航实现跳转
+                },1300)
+            }else{
+                Message({
+                    message: res.message || 'Error',
+                    type: 'error',
+                    duration: 5 * 1000
+                })
+            }
             return Promise.reject(new Error(res.message || 'Error'))
         } else {
             return res

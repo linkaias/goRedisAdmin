@@ -21,16 +21,19 @@ type Response struct {
 
 const (
 	ERROR   = 7
+	NoLOGIN = 6
 	SUCCESS = 0
 )
 
 // Response 自定义返回数据
 func (f Response) Response(code int, msg string, data interface{}, ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, Response{
-		code,
-		msg,
-		data,
-	})
+	ctx.JSON(
+		http.StatusOK, Response{
+			code,
+			msg,
+			data,
+		},
+	)
 }
 
 // RespPage 返回分页数据格式

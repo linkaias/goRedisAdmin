@@ -43,14 +43,12 @@ let router = new VueRouter({
 //全局守卫，前置守卫
 router.beforeEach(async function (to, from, next) {
     let token = GetToken();
-    console.log("token:", token)
     if (token) {//已经登录
         if (to.path === "/login") {
-            next("/");
+            next("/?haveLogin=true");
         }
         next();
     } else {
-        console.log(11,to)
         if (to.path !== "/login") {
             next("/login");
             return
