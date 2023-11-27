@@ -86,6 +86,11 @@
                   width="100">
               </el-table-column>
               <el-table-column
+                  prop="len"
+                  label="长度"
+                  width="100">
+              </el-table-column>
+              <el-table-column
                   width="200"
                   align="center"
                   label="操作">

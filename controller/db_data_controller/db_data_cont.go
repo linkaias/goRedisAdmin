@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"goRedisAdmin/controller"
 	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/utils/log_utils"
@@ -82,6 +83,8 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 		}
 		temp["type"] = keyType
 		temp["key"] = key
+		temp["len"] = getLenByKey(rd, key, keyType)
+
 		expire, _ := rd.TTL(key).Result()
 		expireS := expire.Seconds()
 		if expireS == -1 {
@@ -381,4 +384,27 @@ func isPageOk(num int) bool {
 	} else {
 		return false
 	}
+}
+
+func getLenByKey(rd *redis.Client, key, keyType string) string {
+	lenMsg := ""
+	switch keyType {
+	case "hash":
+		lenMsg = fmt.Sprintf("%d", rd.HLen(key).Val())
+		break
+	case "list":
+		lenMsg = fmt.Sprintf("%d", rd.LLen(key).Val())
+		break
+	case "set":
+		lenMsg = fmt.Sprintf("%d", rd.SCard(key).Val())
+		break
+	case "zset":
+		lenMsg = fmt.Sprintf("%d", rd.ZCard(key).Val())
+		break
+	case "string":
+		lenMsg = fmt.Sprintf("%d", rd.StrLen(key).Val())
+		break
+
+	}
+	return lenMsg
 }
