@@ -6,8 +6,8 @@ export const reqGetDbList = () => request({
     method: "get",
 })
 
-export const reqGetKeys = (dbNum) => request({
-    url: `/db/get_keys?db_num=${dbNum}`,
+export const reqGetKeys = (dbNum, filter) => request({
+    url: `/db/get_keys?db_num=${dbNum}&filter=${filter}`,
     method: "get",
 })
 

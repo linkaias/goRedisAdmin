@@ -61,6 +61,21 @@
         <el-card v-loading="rightLoading" style="margin-top: 10px;min-height: 700px">
           <el-skeleton v-show="rightLoading" :rows="12"/>
           <div v-show="activeDb.show_name">
+            <div class="top_filter">
+              <el-form inline>
+                <el-form-item label="过滤">
+                  <el-input
+                      v-model="filter"
+                      placeholder="搜索过滤Key"
+                      prefix-icon="el-icon-search"
+                      @change="changeFilter"
+                      clearable
+                  />
+                </el-form-item>
+              </el-form>
+            </div>
+
+
             <el-table
                 :data="pageData"
                 style="width: 100%">
@@ -159,7 +174,7 @@ export default {
       rightLoading: false,
       activeForm: false,
       activeData: false,
-
+      filter:"*",
     }
   },
   mounted() {
@@ -250,6 +265,12 @@ export default {
       this.total = 0
       this.getKeysByDb(item.db_num)
     },
+
+    changeFilter(value){
+      let db = this.activeDb.db_num;
+      this.getKeysByDb(db);
+    },
+
     async getDbList() {
       this.leftLoading = true
       let res = await this.$API.dbApi.reqGetDbList()
@@ -262,7 +283,7 @@ export default {
     async getKeysByDb(num) {
       this.rightLoading = true
       this.leftLoading = true
-      let res = await this.$API.dbApi.reqGetKeys(num)
+      let res = await this.$API.dbApi.reqGetKeys(num,this.filter)
       this.allPageData = []
       let info = []
       let allLength = res.data.length
@@ -291,4 +312,8 @@ export default {
 .active_db {
   background: #EBEEF5;
 }
+.top_filter{
+  float: right;
+}
+
 </style>

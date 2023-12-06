@@ -70,6 +70,11 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 	}
 	defer rd.Close()
 	filter := "*"
+	query := ctx.Query("filter")
+	if query != "" {
+		filter = query
+	}
+
 	info, _ := rd.Keys(filter).Result()
 	data := make([]map[string]interface{}, 0)
 	for i, key := range info {
