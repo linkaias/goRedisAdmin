@@ -62,6 +62,11 @@
           <el-skeleton v-show="rightLoading" :rows="12"/>
           <div v-show="activeDb.show_name">
             <div class="top_filter">
+              <div>
+                <el-button @click="handelDelBatch" style="margin-left: 8px" type="danger" plain size="mini"
+                           icon="el-icon-delete">批量删除</el-button>
+              </div>
+
               <el-form inline>
                 <el-form-item label="过滤">
                   <el-input
@@ -77,8 +82,14 @@
 
 
             <el-table
+                ref="multipleTable"
+                @selection-change="handleSelectionChange"
                 :data="pageData"
                 style="width: 100%">
+              <el-table-column
+                  type="selection"
+                  width="55">
+              </el-table-column>
               <el-table-column
                   prop="id"
                   label="ID"
@@ -175,6 +186,7 @@ export default {
       activeForm: false,
       activeData: false,
       filter:"*",
+      multipleSelection: []
     }
   },
   mounted() {
@@ -187,6 +199,37 @@ export default {
       this.$nextTick(() => {
         this.$refs.p_data.initData(this.activeDb.db_num, row)
       })
+    },
+
+    handelDelBatch(){
+      let waitDelKey = [];
+      this.multipleSelection.forEach(item=>{
+        waitDelKey.push(item.key)
+      })
+      if (waitDelKey.length<=0){
+        this.$message.warning("请选择要删除的数据")
+        return false
+      }
+      this.$confirm('此操作将永久删除选中的数据吗, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then( async () => {
+        // waitDelKey转为逗号分隔的字符串
+        waitDelKey = waitDelKey.join(",")
+        let res = await  this.$API.dbApi.reqDelKey(this.activeDb.db_num,waitDelKey)
+        if (res.code === 0) {
+          this.$message.success(res.message)
+          await this.reload()
+        } else {
+          this.$message.error(res.message)
+        }
+      }).catch(() => {
+      });
+    },
+
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
     },
 
     expireKey(row){
@@ -313,7 +356,12 @@ export default {
   background: #EBEEF5;
 }
 .top_filter{
-  float: right;
-}
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
+}
+.el-form-item{
+  margin-bottom: 0px;
+}
 </style>

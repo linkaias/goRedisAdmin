@@ -8,6 +8,7 @@ import (
 	"goRedisAdmin/controller"
 	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/utils/log_utils"
+	"strings"
 	"time"
 )
 
@@ -179,7 +180,15 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 		c.Resp.RespError("key is required", ctx)
 		return
 	}
-	_, err = rd.Del(key).Result()
+	waitDelKey := make([]string, 0)
+	if strings.Contains(key, ",") {
+		waitDelKey = strings.Split(key, ",")
+	} else {
+		waitDelKey = append(waitDelKey, key)
+	}
+	for _, k := range waitDelKey {
+		_, err = rd.Del(k).Result()
+	}
 	if err != nil {
 		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
