@@ -64,7 +64,8 @@
             <div class="top_filter">
               <div>
                 <el-button @click="handelDelBatch" style="margin-left: 8px" type="danger" plain size="mini"
-                           icon="el-icon-delete">批量删除</el-button>
+                           icon="el-icon-delete">批量删除
+                </el-button>
               </div>
 
               <el-form inline>
@@ -103,7 +104,7 @@
               </el-table-column>
               <el-table-column
                   prop="expire_at"
-                  label="自动过期"
+                  label="有效时间"
                   width="width">
               </el-table-column>
               <el-table-column
@@ -113,7 +114,7 @@
               </el-table-column>
               <el-table-column
                   prop="len"
-                  label="长度"
+                  label="值大小"
                   width="100">
               </el-table-column>
               <el-table-column
@@ -185,7 +186,7 @@ export default {
       rightLoading: false,
       activeForm: false,
       activeData: false,
-      filter:"*",
+      filter: "*",
       multipleSelection: []
     }
   },
@@ -201,12 +202,12 @@ export default {
       })
     },
 
-    handelDelBatch(){
+    handelDelBatch() {
       let waitDelKey = [];
-      this.multipleSelection.forEach(item=>{
+      this.multipleSelection.forEach(item => {
         waitDelKey.push(item.key)
       })
-      if (waitDelKey.length<=0){
+      if (waitDelKey.length <= 0) {
         this.$message.warning("请选择要删除的数据")
         return false
       }
@@ -214,10 +215,10 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then( async () => {
+      }).then(async () => {
         // waitDelKey转为逗号分隔的字符串
         waitDelKey = waitDelKey.join(",")
-        let res = await  this.$API.dbApi.reqDelKey(this.activeDb.db_num,waitDelKey)
+        let res = await this.$API.dbApi.reqDelKey(this.activeDb.db_num, waitDelKey)
         if (res.code === 0) {
           this.$message.success(res.message)
           await this.reload()
@@ -232,12 +233,12 @@ export default {
       this.multipleSelection = val;
     },
 
-    expireKey(row){
+    expireKey(row) {
       this.$prompt('请输入过期时间（秒）', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
       }).then(async ({value}) => {
-        let res = await this.$API.dbApi.reqExpireKey( this.activeDb.db_num,value,row.key);
+        let res = await this.$API.dbApi.reqExpireKey(this.activeDb.db_num, value, row.key);
         if (res.code === 0) {
           this.$message.success(res.message)
           await this.reload()
@@ -309,7 +310,7 @@ export default {
       this.getKeysByDb(item.db_num)
     },
 
-    changeFilter(value){
+    changeFilter(value) {
       let db = this.activeDb.db_num;
       this.getKeysByDb(db);
     },
@@ -326,7 +327,7 @@ export default {
     async getKeysByDb(num) {
       this.rightLoading = true
       this.leftLoading = true
-      let res = await this.$API.dbApi.reqGetKeys(num,this.filter)
+      let res = await this.$API.dbApi.reqGetKeys(num, this.filter)
       this.allPageData = []
       let info = []
       let allLength = res.data.length
@@ -355,13 +356,15 @@ export default {
 .active_db {
   background: #EBEEF5;
 }
-.top_filter{
+
+.top_filter {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
 }
-.el-form-item{
+
+.el-form-item {
   margin-bottom: 0px;
 }
 </style>

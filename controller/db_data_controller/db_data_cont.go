@@ -96,7 +96,7 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 		if expireS == -1 {
 			temp["expire_at"] = "长期有效"
 		} else {
-			temp["expire_at"] = expire.String()
+			temp["expire_at"] = expire.String() + "后过期"
 		}
 		data = append(data, temp)
 	}
@@ -404,21 +404,34 @@ func getLenByKey(rd *redis.Client, key, keyType string) string {
 	lenMsg := ""
 	switch keyType {
 	case "hash":
-		lenMsg = fmt.Sprintf("%d", rd.HLen(key).Val())
+		lenMsg = fmt.Sprintf("%d 个", rd.HLen(key).Val())
 		break
 	case "list":
-		lenMsg = fmt.Sprintf("%d", rd.LLen(key).Val())
+		lenMsg = fmt.Sprintf("%d 个", rd.LLen(key).Val())
 		break
 	case "set":
-		lenMsg = fmt.Sprintf("%d", rd.SCard(key).Val())
+		lenMsg = fmt.Sprintf("%d 个", rd.SCard(key).Val())
 		break
 	case "zset":
-		lenMsg = fmt.Sprintf("%d", rd.ZCard(key).Val())
+		lenMsg = fmt.Sprintf("%d 个", rd.ZCard(key).Val())
 		break
 	case "string":
-		lenMsg = fmt.Sprintf("%d", rd.StrLen(key).Val())
+		lenMsg = convertBytes(rd.StrLen(key).Val())
 		break
 
 	}
 	return lenMsg
+}
+
+func convertBytes(bytes int64) string {
+	units := []string{"B", "KB", "MB", "GB", "TB", "PB"}
+	var index int
+	size := float64(bytes)
+
+	for size >= 1024 && index < len(units)-1 {
+		size /= 1024
+		index++
+	}
+
+	return fmt.Sprintf("%.2f %s", size, units[index])
 }
