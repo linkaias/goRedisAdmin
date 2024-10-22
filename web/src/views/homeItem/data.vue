@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h3>数据类型：{{ nowInfo.type }}</h3>
+
     <el-card v-if="nowInfo.type==='hash'">
       <el-table
           :data="data"
@@ -20,10 +22,13 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <el-card v-if="nowInfo.type==='string'">
-      <p>Key: <span>{{ nowInfo.key }}</span></p>
+    <el-card v-else-if="nowInfo.type==='string'">
+      <p>Key: <span style="margin-left: 10px">{{ nowInfo.key }}</span></p>
       <el-divider></el-divider>
-      <p>Value:<span>{{ result }}</span></p>
+      <p>Value:<span style="margin-left: 10px">{{ dataStr }}</span></p>
+    </el-card>
+    <el-card v-else>
+      暂不支持预览此类型数据
     </el-card>
 
     <div style="text-align: right;margin-top: 20px">
@@ -41,6 +46,7 @@ export default {
       dbNum: -1,
       nowInfo: {},
       data: [],
+      dataStr: "",
       cursor: 0,
       count: 0,
     }
@@ -61,7 +67,11 @@ export default {
       }
       let res = await this.$API.dbApi.reqGetValueByKey(this.dbNum, data)
       if (res.code === 0) {
-        this.data = res.data.data
+        if (this.nowInfo.type === "string") {
+          this.dataStr = res.data
+        } else {
+          this.data = res.data.data
+        }
         this.cursor = res.data.cursor
         this.count = res.data.count
       }
