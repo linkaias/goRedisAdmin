@@ -27,6 +27,11 @@
       <el-divider></el-divider>
       <p>Value:<span style="margin-left: 10px">{{ dataStr }}</span></p>
     </el-card>
+    <el-card v-if="nowInfo.type==='set' || nowInfo.type==='list' || nowInfo.type==='zset'">
+      <div style="    display: flex;   flex-direction: row; flex-wrap: wrap;">
+        <span class="set_body" v-for="item in data">{{ item }}</span>
+      </div>
+    </el-card>
     <el-card v-else>
       暂不支持预览此类型数据
     </el-card>
@@ -81,5 +86,10 @@ export default {
 </script>
 
 <style scoped>
-
+.set_body {
+  padding: 5px;
+  margin: 5px 10px;
+  border: 1px solid #c1bfbf8f;
+  border-radius: 10px;
+}
 </style>

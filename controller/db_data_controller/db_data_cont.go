@@ -325,6 +325,52 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 		)
 		return
 	}
+	if s.DType == "set" {
+		result, err := rd.SMembers(s.Key).Result()
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+		c.Resp.RespSuccessWithData(
+			gin.H{
+				"data":  result,
+				"count": len(result),
+			}, ctx,
+		)
+		return
+
+	}
+	if s.DType == "list" {
+		result, err := rd.LRange(s.Key, 0, -1).Result()
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+		c.Resp.RespSuccessWithData(
+			gin.H{
+				"data":  result,
+				"count": len(result),
+			}, ctx,
+		)
+		return
+	}
+	if s.DType == "zset" {
+		result, err := rd.ZRange(s.Key, 0, -1).Result()
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+		c.Resp.RespSuccessWithData(
+			gin.H{
+				"data":  result,
+				"count": len(result),
+			}, ctx,
+		)
+		return
+	}
 
 	c.Resp.RespSuccessWithData(nil, ctx)
 }
@@ -353,6 +399,7 @@ func handleGetVal(valType string, cont *DbDataHelpCont) (interface{}, error) {
 	case "set":
 	case "zset":
 	case "hash":
+		fmt.Println("hash")
 	}
 	return nil, errors.New("type not supported ! ")
 }
