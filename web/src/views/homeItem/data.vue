@@ -27,7 +27,7 @@
       <el-divider></el-divider>
       <p>Value:<span style="margin-left: 10px">{{ dataStr }}</span></p>
     </el-card>
-    <el-card v-if="nowInfo.type==='set' || nowInfo.type==='list' || nowInfo.type==='zset'">
+    <el-card v-else-if="nowInfo.type==='set' || nowInfo.type==='list' || nowInfo.type==='zset'">
       <div style="    display: flex;   flex-direction: row; flex-wrap: wrap;">
         <span class="set_body" v-for="item in data">{{ item }}</span>
       </div>
