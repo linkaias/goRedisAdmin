@@ -8,8 +8,8 @@
       </el-col>
       <el-col :span="10" :offset="1">
         <el-menu default-active="1" mode="horizontal" @select="handleSelect">
-          <el-menu-item index="1">数据中心</el-menu-item>
-          <el-menu-item index="2">设置</el-menu-item>
+          <el-menu-item index="1">数据库</el-menu-item>
+          <el-menu-item index="2">Redis信息</el-menu-item>
           <el-menu-item index="3">
             <a target="_blank" @click="logout"> 退出登录</a>
           </el-menu-item>
@@ -35,7 +35,14 @@ export default {
   name: "HeaderItem",
   methods: {
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+      switch (key) {
+        case "1":
+          this.$router.push("/")
+          break
+        case "2":
+          this.$router.push("/info")
+          break
+      }
     },
     logout() {
       RemoveToken()
