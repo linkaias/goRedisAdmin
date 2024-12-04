@@ -20,6 +20,8 @@ func (u DbDataRouter) InitRouter(group *gin.RouterGroup) (R gin.IRoutes) {
 
 		rou.DELETE("/key", cont.DelKey)
 
+		rou.POST("/export_keys", cont.ExportKey)
+
 		rou.POST("/key", cont.AddVal)
 
 		// 修改过期时间

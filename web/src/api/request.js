@@ -19,6 +19,15 @@ requests.interceptors.request.use((config) => {
 //响应拦截器----当服务器手动请求之后，做出响应（相应成功）会执行的
 requests.interceptors.response.use(
     response => {
+        // 判断如果是下载请求直接返回
+        let rt = response.config.data
+        console.log(response)
+        if (rt != undefined) {
+            rt = JSON.parse(rt)
+            if (rt.responseType == "blob") {
+                return response
+            }
+        }
         let res = response.data
         if (res.code !== 0 && res.code !== 200) {
             if (res.code == 6) {

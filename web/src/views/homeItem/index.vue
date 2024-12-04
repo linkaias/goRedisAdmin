@@ -66,6 +66,9 @@
                 <el-button @click="handelDelBatch" style="margin-left: 8px" type="danger" plain size="mini"
                            icon="el-icon-delete">批量删除
                 </el-button>
+                <el-button @click="handelExportData" style="margin-left: 8px" type="" plain size="mini"
+                           icon="el-icon-download">导出数据
+                </el-button>
               </div>
 
               <el-form inline>
@@ -202,6 +205,7 @@ export default {
       })
     },
 
+    // 批量删除
     handelDelBatch() {
       let waitDelKey = [];
       this.multipleSelection.forEach(item => {
@@ -224,6 +228,33 @@ export default {
           await this.reload()
         } else {
           this.$message.error(res.message)
+        }
+      }).catch(() => {
+      });
+    },
+
+    // 导出数据
+    handelExportData() {
+      let waitDelKey = [];
+      this.multipleSelection.forEach(item => {
+        waitDelKey.push(item.key)
+      })
+      if (waitDelKey.length <= 0) {
+        this.$message.warning("请选择要导出的key")
+        return false
+      }
+      this.$confirm('确定要导出选中的数据吗, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // waitDelKey转为逗号分隔的字符串
+        waitDelKey = waitDelKey.join(",")
+        try {
+          await this.$API.dbApi.reqExportKey(this.activeDb.db_num, waitDelKey)
+          this.$message.success("Success!")
+        } catch (e) {
+          this.$message.error(e)
         }
       }).catch(() => {
       });

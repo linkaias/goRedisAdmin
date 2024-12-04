@@ -7,7 +7,10 @@ import (
 	"github.com/go-redis/redis"
 	"goRedisAdmin/controller"
 	"goRedisAdmin/global/global_redis"
+	"goRedisAdmin/utils/exoprt_utils"
 	"goRedisAdmin/utils/log_utils"
+	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -32,6 +35,7 @@ type DbDataController interface {
 	GetValByKey(ctx *gin.Context)
 	// ExpireKey 修改key的过期时间
 	ExpireKey(ctx *gin.Context)
+	ExportKey(ctx *gin.Context)
 }
 
 func (c dbDataCont) DbList(ctx *gin.Context) {
@@ -195,6 +199,51 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 		return
 	}
 	c.Resp.RespSuccess(ctx)
+}
+
+func (c dbDataCont) ExportKey(ctx *gin.Context) {
+	//default db is 0
+	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
+	rd, err := global_redis.GetRedisClient(dbNum)
+	if err != nil {
+		log_utils.WriteLog("err", err, nil)
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	defer rd.Close()
+	key := ctx.Query("key")
+	if key == "" {
+		c.Resp.RespError("key is required", ctx)
+		return
+	}
+	waitDelKey := make([]string, 0)
+	if strings.Contains(key, ",") {
+		waitDelKey = strings.Split(key, ",")
+	} else {
+		waitDelKey = append(waitDelKey, key)
+	}
+	utils := new(exoprt_utils.ExportUtils)
+	utils.LoadKeysData(rd, waitDelKey)
+	filePath, err := utils.SaveFile()
+	if err != nil {
+		log_utils.WriteLog("err", err, nil)
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	// 设置响应头
+	// 设置响应头
+	ctx.Header("Content-Type", "application/json")
+	ctx.Header("Content-Disposition", `attachment; filename="keys.json"`)
+	ctx.Header("Content-Transfer-Encoding", "binary")
+	// 读取 JSON 文件
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		log_utils.WriteLog("err", err, nil)
+		c.Resp.RespError(err.Error(), ctx)
+		return
+	}
+	// 发送文件
+	ctx.Data(http.StatusOK, "application/json", data)
 }
 
 // ExpireKey 修改key的过期时间
