@@ -28,6 +28,21 @@
       </div>
     </div>
 
+    <!-- stream -->
+    <div v-else-if="nowInfo.type === 'stream'" class="data-section">
+      <div class="section-label">{{ $t('data.streamEntries') }} <span class="count-badge">{{ streamData.length }}</span></div>
+      <div class="hash-table">
+        <div class="hash-row hash-row-header">
+          <span class="hash-col stream-id">ID</span>
+          <span class="hash-col stream-fields">{{ $t('data.fields') }}</span>
+        </div>
+        <div class="hash-row" v-for="(item, idx) in streamData" :key="idx">
+          <span class="hash-col stream-id">{{ item.id }}</span>
+          <span class="hash-col stream-fields">{{ item.fields }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- set / list / zset -->
     <div v-else-if="nowInfo.type === 'set' || nowInfo.type === 'list' || nowInfo.type === 'zset'" class="data-section">
       <div class="section-label">{{ $t('data.members', { type: nowInfo.type.toUpperCase() }) }} <span class="count-badge">{{ data.length }}</span></div>
@@ -38,7 +53,7 @@
 
     <!-- unsupported -->
     <div v-else class="data-section">
-      <p style="color: var(--text-muted)">{{ $t('data.unsupported') }}</p>
+      <p style="color: var(--text-muted)">{{ $t('data.unsupportedWithType', { type: nowInfo.type }) }}</p>
     </div>
 
     <div class="data-footer">
@@ -61,6 +76,7 @@ export default {
       dbNum: -1,
       nowInfo: {},
       data: [],
+      streamData: [],
       dataStr: "",
       cursor: 0,
       count: 0,
@@ -79,13 +95,19 @@ export default {
       let data = { key: this.nowInfo.key, type: this.nowInfo.type }
       let res = await this.$API.dbApi.reqGetValueByKey(this.dbNum, data)
       if (res.code === 0) {
+        let payload = res.data || {}
+        this.data = []
+        this.streamData = []
+        this.dataStr = ""
         if (this.nowInfo.type === "string") {
-          this.dataStr = res.data
+          this.dataStr = payload || ""
+        } else if (this.nowInfo.type === "stream") {
+          this.streamData = Array.isArray(payload.data) ? payload.data : []
         } else {
-          this.data = res.data.data
+          this.data = Array.isArray(payload.data) ? payload.data : []
         }
-        this.cursor = res.data.cursor
-        this.count = res.data.count
+        this.cursor = payload.cursor || 0
+        this.count = payload.count || 0
       }
     }
   }
@@ -133,6 +155,7 @@ export default {
 .type-list   { background: rgba(100, 149, 237, 0.12); color: #6495ed; }
 .type-set    { background: rgba(187, 134, 252, 0.12); color: #bb86fc; }
 .type-zset   { background: rgba(255, 215, 0, 0.12); color: #daa520; }
+.type-stream { background: rgba(64, 196, 255, 0.12); color: #40c4ff; }
 
 .data-section {
   margin-bottom: 20px;
@@ -232,6 +255,21 @@ export default {
 .hash-val {
   flex: 1;
   min-width: 0;
+}
+
+.stream-id {
+  width: 210px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-light);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.stream-fields {
+  flex: 1;
+  min-width: 0;
+  word-break: break-all;
 }
 
 /* ── Tag list ── */

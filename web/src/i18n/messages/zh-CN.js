@@ -76,19 +76,25 @@ export default {
     scorePlaceholder: '输入 Score',
     hashKey: 'Hash 键名',
     hashKeyPlaceholder: '输入 Hash 键名',
+    streamField: 'Stream 字段',
+    streamFieldPlaceholder: '输入 Stream 字段名',
     value: '值',
     valuePlaceholder: '输入值',
     keyRequired: '请填写 Key',
     hashKeyRequired: '请填写 Hash 键名',
+    streamFieldRequired: '请填写 Stream 字段名',
     typeRequired: '请选择类型'
   },
   data: {
     value: '值',
     hashFields: 'Hash 字段',
+    streamEntries: 'Stream 消息',
+    fields: '字段',
     members: '{type} 成员',
     index: '序号',
     key: '键',
-    unsupported: '暂不支持预览此类型数据'
+    unsupported: '暂不支持预览此类型数据',
+    unsupportedWithType: '暂不支持预览此类型数据：{type}'
   },
   info: {
     title: 'Redis 服务信息',

@@ -17,6 +17,7 @@
             <el-option label="set" value="set" />
             <el-option label="zset" value="zset" />
             <el-option label="hash" value="hash" />
+            <el-option label="stream" value="stream" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('form.expireTime')" class="form-row-item form-row-small">
@@ -30,6 +31,10 @@
 
       <el-form-item v-if="formData.type === 'hash'" prop="hash_key" :label="$t('form.hashKey')">
         <el-input v-model="formData.hash_key" :placeholder="$t('form.hashKeyPlaceholder')" />
+      </el-form-item>
+
+      <el-form-item v-if="formData.type === 'stream'" prop="stream_field" :label="$t('form.streamField')">
+        <el-input v-model="formData.stream_field" :placeholder="$t('form.streamFieldPlaceholder')" />
       </el-form-item>
 
       <el-form-item :label="$t('form.value')">
@@ -65,6 +70,7 @@ export default {
       return {
         key: [{ required: true, message: this.$t('form.keyRequired'), trigger: 'blur' }],
         hash_key: [{ required: true, message: this.$t('form.hashKeyRequired'), trigger: 'blur' }],
+        stream_field: [{ required: true, message: this.$t('form.streamFieldRequired'), trigger: 'blur' }],
         type: [{ required: true, message: this.$t('form.typeRequired'), trigger: 'change' }],
       }
     }
@@ -85,6 +91,7 @@ export default {
           val: "",
           score: 1,
           hash_key: "",
+          stream_field: "value",
           expire: 0,
         }
       }

@@ -680,6 +680,7 @@ export default {
 .type-list   { background: rgba(100, 149, 237, 0.12); color: #6495ed; }
 .type-set    { background: rgba(187, 134, 252, 0.12); color: #bb86fc; }
 .type-zset   { background: rgba(255, 215, 0, 0.12); color: #daa520; }
+.type-stream { background: rgba(64, 196, 255, 0.12); color: #40c4ff; }
 
 /* ── Row actions ── */
 .row-actions {

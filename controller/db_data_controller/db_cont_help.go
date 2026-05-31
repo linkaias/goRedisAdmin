@@ -11,13 +11,14 @@ import (
 
 // DbDataHelpModel is a generic payload for Redis add/get operations.
 type DbDataHelpModel struct {
-	DbNum   int    `json:"db_num"`
-	VType   string `json:"type"`
-	Key     string `json:"key"`
-	Val     string `json:"val"`
-	Expire  int    `json:"expire"`
-	HashKey string `json:"hash_key,omitempty"`
-	Score   int    `json:"score,omitempty"`
+	DbNum       int    `json:"db_num"`
+	VType       string `json:"type"`
+	Key         string `json:"key"`
+	Val         string `json:"val"`
+	Expire      int    `json:"expire"`
+	HashKey     string `json:"hash_key,omitempty"`
+	StreamField string `json:"stream_field,omitempty"`
+	Score       int    `json:"score,omitempty"`
 }
 
 // DbDataHelpCont wraps a redis client and operation payload.
@@ -97,6 +98,27 @@ func (d *DbDataHelpCont) AddZSet() error {
 // AddHash sets hash field/value and applies optional expiration.
 func (d *DbDataHelpCont) AddHash() error {
 	_, err := d.redis.HSet(d.Key, d.HashKey, d.Val).Result()
+	if err != nil {
+		return err
+	}
+	return setExpire(d)
+}
+
+// AddStream appends an entry into stream and applies optional expiration.
+func (d *DbDataHelpCont) AddStream() error {
+	field := d.StreamField
+	if field == "" {
+		field = "value"
+	}
+	_, err := d.redis.XAdd(
+		&redis.XAddArgs{
+			Stream: d.Key,
+			ID:     "*",
+			Values: map[string]interface{}{
+				field: d.Val,
+			},
+		},
+	).Result()
 	if err != nil {
 		return err
 	}

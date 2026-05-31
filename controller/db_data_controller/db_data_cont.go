@@ -1,6 +1,7 @@
 package db_data_controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"goRedisAdmin/controller"
@@ -430,8 +431,41 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 		)
 		return
 	}
+	if s.DType == "stream" {
+		result, err := rd.XRange(s.Key, "-", "+").Result()
+		if err != nil {
+			log_utils.WriteLog("err", err, nil)
+			c.Resp.RespError(err.Error(), ctx)
+			return
+		}
+		data := make([]map[string]string, 0, len(result))
+		for _, item := range result {
+			data = append(
+				data,
+				map[string]string{
+					"id":     item.ID,
+					"fields": marshalStreamFields(item.Values),
+				},
+			)
+		}
+		c.Resp.RespSuccessWithData(
+			gin.H{
+				"data":  data,
+				"count": len(data),
+			}, ctx,
+		)
+		return
+	}
 
-	c.Resp.RespSuccessWithData(nil, ctx)
+	c.Resp.RespSuccessWithData(
+		gin.H{
+			"data":        []interface{}{},
+			"count":       0,
+			"cursor":      0,
+			"unsupported": true,
+		},
+		ctx,
+	)
 }
 
 // handleAddVal dispatches add operation by Redis data type.
@@ -447,6 +481,8 @@ func handleAddVal(valType string, cont *DbDataHelpCont) error {
 		return cont.AddZSet()
 	case "hash":
 		return cont.AddHash()
+	case "stream":
+		return cont.AddStream()
 	}
 	return errors.New("type not supported ! ")
 }
@@ -517,22 +553,31 @@ func getLenByKey(rd *redis.Client, key, keyType string) string {
 	switch keyType {
 	case "hash":
 		lenMsg = fmt.Sprintf("%d 个", rd.HLen(key).Val())
-		break
 	case "list":
 		lenMsg = fmt.Sprintf("%d 个", rd.LLen(key).Val())
-		break
 	case "set":
 		lenMsg = fmt.Sprintf("%d 个", rd.SCard(key).Val())
-		break
 	case "zset":
 		lenMsg = fmt.Sprintf("%d 个", rd.ZCard(key).Val())
-		break
 	case "string":
 		lenMsg = convertBytes(rd.StrLen(key).Val())
-		break
+	case "stream":
+		lenMsg = fmt.Sprintf("%d 条", rd.XLen(key).Val())
 
 	}
 	return lenMsg
+}
+
+// marshalStreamFields formats stream fields into JSON text for direct UI display.
+func marshalStreamFields(fields map[string]interface{}) string {
+	if len(fields) == 0 {
+		return "{}"
+	}
+	b, err := json.Marshal(fields)
+	if err != nil {
+		return "{}"
+	}
+	return string(b)
 }
 
 // convertBytes converts byte count into human-readable binary unit string.

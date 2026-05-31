@@ -76,19 +76,25 @@ export default {
     scorePlaceholder: 'Enter score',
     hashKey: 'Hash Key',
     hashKeyPlaceholder: 'Enter hash key name',
+    streamField: 'Stream Field',
+    streamFieldPlaceholder: 'Enter stream field name',
     value: 'Value',
     valuePlaceholder: 'Enter value',
     keyRequired: 'Please enter key',
     hashKeyRequired: 'Please enter hash key',
+    streamFieldRequired: 'Please enter stream field name',
     typeRequired: 'Please select a type'
   },
   data: {
     value: 'Value',
     hashFields: 'Hash Fields',
+    streamEntries: 'Stream Entries',
+    fields: 'Fields',
     members: '{type} Members',
     index: '#',
     key: 'Key',
-    unsupported: 'Preview is not available for this data type'
+    unsupported: 'Preview is not available for this data type',
+    unsupportedWithType: 'Preview is not available for this data type: {type}'
   },
   info: {
     title: 'Redis Server Info',

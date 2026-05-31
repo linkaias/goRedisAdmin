@@ -46,6 +46,8 @@ func (e *ExportUtils) LoadKeysData(client *redis.Client, keys []string) error {
 			value, err = client.SMembers(key).Result()
 		case "zset":
 			value, err = client.ZRangeWithScores(key, 0, -1).Result()
+		case "stream":
+			value, err = client.XRange(key, "-", "+").Result()
 		default:
 			continue
 		}
