@@ -51,7 +51,7 @@ GoRedisAdmin is a Redis admin platform built with Golang (Gin) and Vue 2 (Elemen
 
 | Layer | Technology |
 | --- | --- |
-| Backend | Go 1.19 + Gin + go-redis v6 |
+| Backend | Go 1.25 + Gin + go-redis v6 |
 | Frontend | Vue 2 + Element UI + Axios |
 | Authentication | JWT (golang-jwt) |
 | Logging | Logrus + daily file rotation |
@@ -61,7 +61,7 @@ GoRedisAdmin is a Redis admin platform built with Golang (Gin) and Vue 2 (Elemen
 
 ### Requirements
 
-- Go 1.19+
+- Go 1.25+
 - Node.js 14+ (only required if you need to modify frontend source code)
 - Redis instance
 

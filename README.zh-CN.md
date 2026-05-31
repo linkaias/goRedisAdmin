@@ -50,7 +50,7 @@ GoRedisAdmin 是一款使用 Golang (Gin) 和 Vue 2 (Element UI) 开发的 Redis
 
 | 层级 | 技术 |
 | --- | --- |
-| 后端 | Go 1.19 + Gin + go-redis v6 |
+| 后端 | Go 1.25 + Gin + go-redis v6 |
 | 前端 | Vue 2 + Element UI + Axios |
 | 认证 | JWT (golang-jwt) |
 | 日志 | Logrus + 文件按天切割 |
@@ -60,7 +60,7 @@ GoRedisAdmin 是一款使用 Golang (Gin) 和 Vue 2 (Element UI) 开发的 Redis
 
 ### 环境要求
 
-- Go 1.19+
+- Go 1.25+
 - Node.js 14+（如需修改前端）
 - Redis 实例
 

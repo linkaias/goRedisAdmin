@@ -1,14 +1,25 @@
 package exoprt_utils
 
 import (
-	"goRedisAdmin/global/global_redis"
+	"os"
 	"testing"
 )
 
 func TestExportUtils_ExportFile(t *testing.T) {
-	cont := &ExportUtils{}
-	rd, _ := global_redis.GetRedisClient(0)
+	cont := &ExportUtils{
+		data: []*ExportRedisDataModel{
+			{Key: "k1", Type: "string", Value: "v1"},
+		},
+	}
 
-	cont.LoadKeysData(rd, []string{"fffff", "tttt"})
-	cont.ExportFile()
+	filePath, err := cont.SaveFile()
+	if err != nil {
+		t.Fatalf("SaveFile failed: %v", err)
+	}
+
+	if _, err := os.Stat(filePath); err != nil {
+		t.Fatalf("export file not created: %v", err)
+	}
+
+	_ = os.Remove(filePath)
 }

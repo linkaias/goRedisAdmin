@@ -3,11 +3,12 @@ package exoprt_utils
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/go-redis/redis"
-	"github.com/goccy/go-json"
 	"io"
 	"os"
 	"time"
+
+	"github.com/go-redis/redis"
+	"github.com/goccy/go-json"
 )
 
 type ExportRedisDataModel struct {
@@ -59,12 +60,9 @@ func (e *ExportUtils) LoadKeysData(client *redis.Client, keys []string) error {
 
 func (e *ExportUtils) SaveFile() (string, error) {
 	baseDir := "./var/export"
-	// 判断./var/export 目录是否存在，没创建则创建
-	if _, err := os.Stat(baseDir); os.IsNotExist(err) {
-		err := os.Mkdir("./var/export", 0755)
-		if err != nil {
-			return "", err
-		}
+	// 递归创建目录，避免父目录不存在导致失败
+	if err := os.MkdirAll(baseDir, 0755); err != nil {
+		return "", err
 	}
 	// 将数据保存到JSON文件
 	filePath := baseDir + "/export_" + time.Now().Format("2006-01-02 15:04:05") + ".json"

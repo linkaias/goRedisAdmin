@@ -13,7 +13,7 @@ func TestBCYHashPassword(t *testing.T) {
 func TestBCYComparePassword(t *testing.T) {
 	pwd := "123456"
 	keyPwd := `$2a$10$VTiL7jOvrdShutUePqyPJ./Yjc72TLarQM60cvnQ3PA/INx/jyb2a`
-	if BCYComparePassword(pwd, keyPwd) {
+	if BCYComparePassword(keyPwd, pwd) {
 		t.Log("pwd check success")
 	} else {
 		t.Error("BCYComparePassword failed")
