@@ -1,5 +1,6 @@
 //获取数据库列表
 import request from "@/api/request";
+import i18n from "@/i18n";
 
 export const reqGetDbList = () => request({
     url: `/db/db_list`,
@@ -25,12 +26,13 @@ export const reqExportKey = async function (dbNum, key) {
     try {
         let response = await request.post(
             `/db/export_keys?db_num=${dbNum}&key=${key}`,
-            {responseType: 'blob'} // 设置响应类型为 blob
+            {},
+            { responseType: 'blob' }
         );
 
         // 确保返回的是数组
         if (!Array.isArray(response.data)) {
-            console.error("返回的数据不是一个数组！");
+            console.error(i18n.t('request.responseNotArray'));
             return;
         }
 // 将数组转换为 JSON 字符串
@@ -52,7 +54,7 @@ export const reqExportKey = async function (dbNum, key) {
         // 释放 URL 对象
         URL.revokeObjectURL(link.href);
     } catch (error) {
-        console.error('下载文件失败：', error);
+        console.error(i18n.t('request.downloadFailed'), error);
     }
 
 }

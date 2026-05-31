@@ -35,6 +35,7 @@ GoRedisAdmin is a Redis admin platform built with Golang (Gin) and Vue 2 (Elemen
 
 ## Features
 
+- Bilingual UI support (Chinese / English) with one-click language switch and preference persistence
 - Login and logout with JWT authentication and auto token refresh
 - Database list (Db0 - Db15)
 - Redis key management with fuzzy search
@@ -137,6 +138,8 @@ npm install
 npm run serve    # Start development server
 npm run build    # Build to html/ directory
 ```
+
+After login, use the language switch in the top navigation to toggle between Chinese and English.
 
 ## Project Structure
 

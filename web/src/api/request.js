@@ -2,6 +2,7 @@
 import axios from "axios";
 import {Message} from 'element-ui'
 import {GetToken} from "@/utils/token";
+import i18n from "@/i18n";
 
 //底下的代码也是创建axios实例
 let requests = axios.create({
@@ -19,7 +20,11 @@ requests.interceptors.request.use((config) => {
 //响应拦截器----当服务器手动请求之后，做出响应（相应成功）会执行的
 requests.interceptors.response.use(
     response => {
-        // 判断如果是下载请求直接返回
+        // Blob download requests should bypass common envelope parsing.
+        if (response.config.responseType === 'blob') {
+            return response
+        }
+        // Backward compatibility: legacy callers may pass responseType in body.
         let rt = response.config.data
         console.log(response)
         if (rt != undefined) {
@@ -32,19 +37,19 @@ requests.interceptors.response.use(
         if (res.code !== 0 && res.code !== 200) {
             if (res.code == 6) {
                 Message({
-                    message: '登录无效，请重新登录',
+                    message: i18n.t('request.loginExpired'),
                     type: 'error',
                     duration: 5 * 1000
                 })
                 window.location.href = '/#/login'; // 或者使用路由导航实现跳转
             } else {
                 Message({
-                    message: res.message || 'Error',
+                    message: res.message || i18n.t('request.error'),
                     type: 'error',
                     duration: 5 * 1000
                 })
             }
-            return Promise.reject(new Error(res.message || 'Error'))
+            return Promise.reject(new Error(res.message || i18n.t('request.error')))
         } else {
             return res
         }

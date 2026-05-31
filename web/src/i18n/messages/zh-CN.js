@@ -1,0 +1,107 @@
+export default {
+  common: {
+    appName: 'GoRedisAdmin',
+    language: '语言',
+    chinese: '中文',
+    english: 'English',
+    refresh: '刷新',
+    save: '保存',
+    cancel: '取消',
+    close: '关闭',
+    confirm: '确定',
+    warning: '提示',
+    alert: '警告',
+    operationSuccess: '操作成功'
+  },
+  header: {
+    databases: '数据库',
+    redisInfo: 'Redis 信息',
+    logout: '退出登录',
+    github: 'GitHub'
+  },
+  login: {
+    subtitle: '连接到管理面板',
+    username: '用户名',
+    password: '密码',
+    usernamePlaceholder: '输入用户名',
+    passwordPlaceholder: '输入密码',
+    loginButton: '登 录',
+    validating: '验证中...',
+    success: '连接成功',
+    redirecting: '正在进入管理面板...',
+    emptyCredentials: '用户名或密码不能为空'
+  },
+  home: {
+    databasesTitle: '数据库列表',
+    current: '当前',
+    selectDatabase: '请选择数据库',
+    keyCount: '键',
+    addKey: '新增 Key',
+    clearDatabase: '清空库',
+    flushAll: '清空全部',
+    flushAllConfirm: '确定清空所有数据库？',
+    batchDelete: '批量删除',
+    exportData: '导出数据',
+    searchPlaceholder: '搜索过滤 Key...',
+    expireAt: '有效时间',
+    type: '类型',
+    size: '大小',
+    actions: '操作',
+    view: '查看',
+    setExpire: '过期时间',
+    delete: '删除',
+    selectDatabaseHint: '选择左侧数据库开始管理',
+    addKeyDialogTitle: '新增 Key — {dbName}',
+    viewDataTitle: '查看数据',
+    selectDeleteWarning: '请选择要删除的数据',
+    batchDeleteConfirm: '此操作将永久删除选中的数据，是否继续？',
+    selectExportWarning: '请选择要导出的 Key',
+    exportConfirm: '确定要导出选中的数据吗？',
+    exportSuccess: '导出成功！',
+    expirePromptMessage: '请输入过期时间（秒，0 为永不过期）',
+    expirePromptTitle: '设置过期时间',
+    deleteKeyConfirm: '确定删除 [{key}] 吗？',
+    flushTargetAll: '全部数据库',
+    flushTargetDb: '数据库 {name}',
+    flushConfirm: '此操作将清空 {target} 的数据，是否继续？'
+  },
+  form: {
+    keyName: '键名',
+    keyPlaceholder: '输入 Key 名称',
+    type: '类型',
+    typePlaceholder: '选择数据类型',
+    expireTime: '过期时间',
+    expirePlaceholder: '0 = 永不过期',
+    score: 'Score',
+    scorePlaceholder: '输入 Score',
+    hashKey: 'Hash 键名',
+    hashKeyPlaceholder: '输入 Hash 键名',
+    value: '值',
+    valuePlaceholder: '输入值',
+    keyRequired: '请填写 Key',
+    hashKeyRequired: '请填写 Hash 键名',
+    typeRequired: '请选择类型'
+  },
+  data: {
+    value: '值',
+    hashFields: 'Hash 字段',
+    members: '{type} 成员',
+    index: '序号',
+    key: '键',
+    unsupported: '暂不支持预览此类型数据'
+  },
+  info: {
+    title: 'Redis 服务信息',
+    waitLoading: '等待加载...'
+  },
+  right: {
+    home: '首页',
+    description: '页面描述'
+  },
+  request: {
+    loginExpired: '登录无效，请重新登录',
+    responseNotArray: '返回的数据不是一个数组！',
+    downloadFailed: '下载文件失败：',
+    error: '错误'
+  }
+}

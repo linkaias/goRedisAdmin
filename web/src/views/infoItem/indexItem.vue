@@ -7,14 +7,14 @@
           <line x1="12" y1="16" x2="12" y2="12"/>
           <line x1="12" y1="8" x2="12.01" y2="8"/>
         </svg>
-        <span>Redis Server Info</span>
+        <span>{{ $t('info.title') }}</span>
       </div>
       <button class="btn-refresh" @click="getInfo" :class="{ 'is-spinning': isLoading }">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"/>
           <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
         </svg>
-        刷新
+        {{ $t('common.refresh') }}
       </button>
     </div>
 
@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     formattedInfo() {
-      if (!this.InfoData) return '<span style="color: var(--text-muted)">等待加载...</span>'
+      if (!this.InfoData) return `<span style="color: var(--text-muted)">${this.$t('info.waitLoading')}</span>`
       return this.InfoData
         .replace(/# ([^\n<]+)/g, '<span class="info-section">$1</span>')
         .replace(/([a-z_]+):/g, '<span class="info-key">$1</span>:')

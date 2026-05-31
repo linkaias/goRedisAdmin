@@ -34,6 +34,7 @@ GoRedisAdmin 是一款使用 Golang (Gin) 和 Vue 2 (Element UI) 开发的 Redis
 
 ## 功能
 
+- 管理面板支持中英双语，可一键切换语言并自动记住语言偏好
 - 登录/注销（JWT Token 认证，自动续期）
 - 数据库列表（Db0 - Db15）
 - 数据库 Key 管理（支持模糊搜索）
@@ -136,6 +137,8 @@ npm install
 npm run serve    # 启动开发服务器
 npm run build    # 构建到 html/ 目录
 ```
+
+登录后可通过顶部导航中的语言切换按钮在中文和英文之间切换。
 
 ## 项目结构
 

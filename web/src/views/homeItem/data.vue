@@ -7,18 +7,18 @@
 
     <!-- string -->
     <div v-if="nowInfo.type === 'string'" class="data-section">
-      <div class="section-label">Value</div>
+      <div class="section-label">{{ $t('data.value') }}</div>
       <div class="code-block">{{ dataStr }}</div>
     </div>
 
     <!-- hash -->
     <div v-else-if="nowInfo.type === 'hash'" class="data-section">
-      <div class="section-label">Hash Fields <span class="count-badge">{{ data.length }}</span></div>
+      <div class="section-label">{{ $t('data.hashFields') }} <span class="count-badge">{{ data.length }}</span></div>
       <div class="hash-table">
         <div class="hash-row hash-row-header">
-          <span class="hash-col hash-idx">#</span>
-          <span class="hash-col hash-key">Key</span>
-          <span class="hash-col hash-val">Value</span>
+          <span class="hash-col hash-idx">{{ $t('data.index') }}</span>
+          <span class="hash-col hash-key">{{ $t('data.key') }}</span>
+          <span class="hash-col hash-val">{{ $t('data.value') }}</span>
         </div>
         <div class="hash-row" v-for="(item, idx) in data" :key="idx">
           <span class="hash-col hash-idx">{{ idx + 1 }}</span>
@@ -30,7 +30,7 @@
 
     <!-- set / list / zset -->
     <div v-else-if="nowInfo.type === 'set' || nowInfo.type === 'list' || nowInfo.type === 'zset'" class="data-section">
-      <div class="section-label">{{ nowInfo.type.toUpperCase() }} Members <span class="count-badge">{{ data.length }}</span></div>
+      <div class="section-label">{{ $t('data.members', { type: nowInfo.type.toUpperCase() }) }} <span class="count-badge">{{ data.length }}</span></div>
       <div class="tag-list">
         <span class="data-tag" v-for="(item, idx) in data" :key="idx">{{ item }}</span>
       </div>
@@ -38,7 +38,7 @@
 
     <!-- unsupported -->
     <div v-else class="data-section">
-      <p style="color: var(--text-muted)">暂不支持预览此类型数据</p>
+      <p style="color: var(--text-muted)">{{ $t('data.unsupported') }}</p>
     </div>
 
     <div class="data-footer">
@@ -47,7 +47,7 @@
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
-        关闭
+        {{ $t('common.close') }}
       </button>
     </div>
   </div>

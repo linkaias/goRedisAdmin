@@ -2,11 +2,11 @@
   <div>
     <el-page-header>
       <template v-slot:title>
-        首页
+        {{ $t('right.home') }}
       </template>
       <template v-slot:content>
         <el-row>
-          <span>页面描述</span>
+          <span>{{ $t('right.description') }}</span>
         </el-row>
       </template>
     </el-page-header>

@@ -19,7 +19,7 @@
           <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
           <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
         </svg>
-        <span>数据库</span>
+        <span>{{ $t('header.databases') }}</span>
       </a>
       <a
         class="nav-item"
@@ -31,12 +31,23 @@
           <line x1="12" y1="16" x2="12" y2="12"/>
           <line x1="12" y1="8" x2="12.01" y2="8"/>
         </svg>
-        <span>Redis 信息</span>
+        <span>{{ $t('header.redisInfo') }}</span>
       </a>
     </nav>
 
     <div class="header-actions">
-      <a class="action-link" href="https://github.com/linkaias/goRedisAdmin" target="_blank" title="GitHub">
+      <el-dropdown trigger="click" @command="changeLanguage">
+        <span class="lang-switch">
+          {{ currentLanguageLabel }}
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="zh-CN">{{ $t('common.chinese') }}</el-dropdown-item>
+          <el-dropdown-item command="en-US">{{ $t('common.english') }}</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <a class="action-link" href="https://github.com/linkaias/goRedisAdmin" target="_blank" :title="$t('header.github')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
         </svg>
@@ -48,7 +59,7 @@
           <polyline points="16 17 21 12 16 7"/>
           <line x1="21" y1="12" x2="9" y2="12"/>
         </svg>
-        <span>退出</span>
+        <span>{{ $t('header.logout') }}</span>
       </a>
     </div>
   </div>
@@ -56,12 +67,16 @@
 
 <script>
 import {RemoveToken} from "@/utils/token";
+import { getLanguage, LANG_EN } from "@/i18n";
 
 export default {
   name: "HeaderItem",
   computed: {
     activeRoute() {
       return this.$route.path
+    },
+    currentLanguageLabel() {
+      return this.$i18n.locale === LANG_EN ? this.$t('common.english') : this.$t('common.chinese')
     }
   },
   methods: {
@@ -73,6 +88,11 @@ export default {
     logout() {
       RemoveToken()
       location.reload()
+    },
+    changeLanguage(lang) {
+      if (lang !== getLanguage()) {
+        this.$setLanguage(lang)
+      }
     }
   }
 }
@@ -145,6 +165,26 @@ export default {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+}
+
+.lang-switch:hover {
+  border-color: var(--accent);
+  color: var(--accent-light);
 }
 
 .action-link {

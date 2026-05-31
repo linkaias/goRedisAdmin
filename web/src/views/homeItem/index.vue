@@ -4,8 +4,8 @@
       <!-- ── 左侧数据库列表 ── -->
       <aside class="sidebar">
         <div class="sidebar-header">
-          <span class="sidebar-title">Databases</span>
-          <button class="btn-icon" @click="getDbList()" :class="{ 'is-spinning': leftLoading }" title="刷新">
+          <span class="sidebar-title">{{ $t('home.databasesTitle') }}</span>
+          <button class="btn-icon" @click="getDbList()" :class="{ 'is-spinning': leftLoading }" :title="$t('common.refresh')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="23 4 23 10 17 10"/>
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
@@ -39,38 +39,38 @@
         <div class="content-toolbar">
           <div class="toolbar-left">
             <span class="toolbar-db" v-if="activeDb.show_name">
-              <span class="toolbar-db-label">当前</span>
+              <span class="toolbar-db-label">{{ $t('home.current') }}</span>
               <span class="toolbar-db-name">{{ activeDb.show_name }}</span>
-              <span class="toolbar-db-count">{{ activeDb.keys_len }} keys</span>
+              <span class="toolbar-db-count">{{ activeDb.keys_len }} {{ $t('home.keyCount') }}</span>
             </span>
             <span class="toolbar-db" v-else>
-              <span class="toolbar-db-label" style="color: var(--text-muted)">请选择数据库</span>
+              <span class="toolbar-db-label" style="color: var(--text-muted)">{{ $t('home.selectDatabase') }}</span>
             </span>
           </div>
           <div class="toolbar-right" v-if="activeDb.show_name">
-            <button class="btn-tool" @click="handleClickLeft(activeDb)" title="刷新">
+            <button class="btn-tool" @click="handleClickLeft(activeDb)" :title="$t('common.refresh')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="23 4 23 10 17 10"/>
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
               </svg>
-              刷新
+              {{ $t('common.refresh') }}
             </button>
             <button class="btn-tool btn-accent" @click="showForm({})">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
-              新增 Key
+              {{ $t('home.addKey') }}
             </button>
             <button class="btn-tool btn-ghost" @click="handleFlush('db')">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"/>
                 <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
               </svg>
-              清空库
+              {{ $t('home.clearDatabase') }}
             </button>
-            <el-popconfirm title="确定清空所有数据库？" @confirm="handleFlush('all')">
-              <button class="btn-tool btn-danger" slot="reference">FlushAll</button>
+            <el-popconfirm :title="$t('home.flushAllConfirm')" @confirm="handleFlush('all')">
+              <button class="btn-tool btn-danger" slot="reference">{{ $t('home.flushAll') }}</button>
             </el-popconfirm>
           </div>
         </div>
@@ -86,7 +86,7 @@
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                   </svg>
-                  批量删除
+                  {{ $t('home.batchDelete') }}
                 </button>
                 <button class="btn-tool btn-sm" @click="handelExportData">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -94,13 +94,13 @@
                     <polyline points="7 10 12 15 17 10"/>
                     <line x1="12" y1="15" x2="12" y2="3"/>
                   </svg>
-                  导出数据
+                  {{ $t('home.exportData') }}
                 </button>
               </div>
               <div class="filter-search">
                 <el-input
                   v-model="filter"
-                  placeholder="搜索过滤 Key..."
+                  :placeholder="$t('home.searchPlaceholder')"
                   prefix-icon="el-icon-search"
                   @change="changeFilter"
                   clearable
@@ -119,30 +119,30 @@
               <el-table-column type="selection" width="45" />
               <el-table-column prop="id" label="ID" align="center" width="70" />
               <el-table-column prop="key" label="Key" min-width="200" />
-              <el-table-column prop="expire_at" label="有效时间" width="140" />
-              <el-table-column prop="type" label="类型" width="90">
+              <el-table-column prop="expire_at" :label="$t('home.expireAt')" width="140" />
+              <el-table-column prop="type" :label="$t('home.type')" width="90">
                 <template v-slot:default="{row}">
                   <span class="type-badge" :class="'type-' + row.type">{{ row.type }}</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="len" label="大小" width="100" />
-              <el-table-column width="180" align="center" label="操作">
+              <el-table-column prop="len" :label="$t('home.size')" width="100" />
+              <el-table-column width="180" align="center" :label="$t('home.actions')">
                 <template v-slot:default="{row}">
                   <div class="row-actions">
-                    <button class="btn-row" title="查看" @click="viewData(row)">
+                    <button class="btn-row" :title="$t('home.view')" @click="viewData(row)">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                         <circle cx="12" cy="12" r="3"/>
                       </svg>
                     </button>
-                    <button class="btn-row" title="过期时间" @click="expireKey(row)">
+                    <button class="btn-row" :title="$t('home.setExpire')" @click="expireKey(row)">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                       </svg>
                     </button>
-                    <el-popconfirm :title="'确定删除 [' + row.key + '] 吗？'" @confirm="delKey(row.key)">
-                      <button class="btn-row btn-row-danger" title="删除" slot="reference">
+                    <el-popconfirm :title="$t('home.deleteKeyConfirm', { key: row.key })" @confirm="delKey(row.key)">
+                      <button class="btn-row btn-row-danger" :title="$t('home.delete')" slot="reference">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <polyline points="3 6 5 6 21 6"/>
                           <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -175,7 +175,7 @@
               <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
               <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
             </svg>
-            <p>选择左侧数据库开始管理</p>
+            <p>{{ $t('home.selectDatabaseHint') }}</p>
           </div>
         </div>
       </section>
@@ -183,7 +183,7 @@
 
     <!-- ── Dialogs ── -->
     <el-dialog
-      :title="'新增 Key — ' + activeDb.show_name"
+      :title="$t('home.addKeyDialogTitle', { dbName: activeDb.show_name || '' })"
       :visible.sync="activeForm"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -196,7 +196,7 @@
     </el-dialog>
 
     <el-dialog
-      title="查看数据"
+      :title="$t('home.viewDataTitle')"
       :visible.sync="activeData"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -249,12 +249,12 @@ export default {
       let waitDelKey = []
       this.multipleSelection.forEach(item => waitDelKey.push(item.key))
       if (waitDelKey.length <= 0) {
-        this.$message.warning("请选择要删除的数据")
+        this.$message.warning(this.$t('home.selectDeleteWarning'))
         return
       }
-      this.$confirm('此操作将永久删除选中的数据, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('home.batchDeleteConfirm'), this.$t('common.warning'), {
+        confirmButtonText: this.$t('common.confirm'),
+        cancelButtonText: this.$t('common.cancel'),
         type: 'warning'
       }).then(async () => {
         waitDelKey = waitDelKey.join(",")
@@ -271,18 +271,18 @@ export default {
       let waitDelKey = []
       this.multipleSelection.forEach(item => waitDelKey.push(item.key))
       if (waitDelKey.length <= 0) {
-        this.$message.warning("请选择要导出的key")
+        this.$message.warning(this.$t('home.selectExportWarning'))
         return
       }
-      this.$confirm('确定要导出选中的数据吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$t('home.exportConfirm'), this.$t('common.warning'), {
+        confirmButtonText: this.$t('common.confirm'),
+        cancelButtonText: this.$t('common.cancel'),
         type: 'warning'
       }).then(async () => {
         waitDelKey = waitDelKey.join(",")
         try {
           await this.$API.dbApi.reqExportKey(this.activeDb.db_num, waitDelKey)
-          this.$message.success("导出成功!")
+          this.$message.success(this.$t('home.exportSuccess'))
         } catch (e) {
           this.$message.error(e)
         }
@@ -292,9 +292,9 @@ export default {
       this.multipleSelection = val
     },
     expireKey(row) {
-      this.$prompt('请输入过期时间（秒，0为永不过期）', '设置过期时间', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$prompt(this.$t('home.expirePromptMessage'), this.$t('home.expirePromptTitle'), {
+        confirmButtonText: this.$t('common.confirm'),
+        cancelButtonText: this.$t('common.cancel'),
       }).then(async ({ value }) => {
         let res = await this.$API.dbApi.reqExpireKey(this.activeDb.db_num, value, row.key)
         if (res.code === 0) {
@@ -309,10 +309,12 @@ export default {
       this.showForm(row)
     },
     handleFlush(type) {
-      let msg = type === "all" ? "全部数据库" : "数据库 " + this.activeDb.show_name
-      this.$confirm('此操作将清空' + msg + ' 的数据, 是否继续?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      let target = type === "all"
+        ? this.$t('home.flushTargetAll')
+        : this.$t('home.flushTargetDb', { name: this.activeDb.show_name })
+      this.$confirm(this.$t('home.flushConfirm', { target }), this.$t('common.alert'), {
+        confirmButtonText: this.$t('common.confirm'),
+        cancelButtonText: this.$t('common.cancel'),
         type: 'warning'
       }).then(async () => {
         let res = await this.$API.dbApi.reqFlush(type, this.activeDb.db_num)

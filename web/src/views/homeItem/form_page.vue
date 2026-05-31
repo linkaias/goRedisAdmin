@@ -1,17 +1,17 @@
 <template>
   <div class="form-page">
     <el-form ref="form_son" :rules="rules" :model="formData" label-width="80px">
-      <el-form-item prop="key" label="键名">
+      <el-form-item prop="key" :label="$t('form.keyName')">
         <el-input
           :disabled="formData.id > 0"
           v-model="formData.key"
-          placeholder="输入 Key 名称"
+          :placeholder="$t('form.keyPlaceholder')"
         />
       </el-form-item>
 
       <div class="form-row">
-        <el-form-item prop="type" label="类型" class="form-row-item">
-          <el-select :disabled="formData.id > 0" v-model="formData.type" placeholder="选择数据类型">
+        <el-form-item prop="type" :label="$t('form.type')" class="form-row-item">
+          <el-select :disabled="formData.id > 0" v-model="formData.type" :placeholder="$t('form.typePlaceholder')">
             <el-option label="string" value="string" />
             <el-option label="list" value="list" />
             <el-option label="set" value="set" />
@@ -19,21 +19,21 @@
             <el-option label="hash" value="hash" />
           </el-select>
         </el-form-item>
-        <el-form-item label="过期时间" class="form-row-item form-row-small">
-          <el-input v-model="formData.expire" type="number" placeholder="0 = 永不过期" />
+        <el-form-item :label="$t('form.expireTime')" class="form-row-item form-row-small">
+          <el-input v-model="formData.expire" type="number" :placeholder="$t('form.expirePlaceholder')" />
         </el-form-item>
       </div>
 
-      <el-form-item v-if="formData.type === 'zset'" label="Score">
-        <el-input v-model="formData.score" placeholder="输入 Score" type="number" />
+      <el-form-item v-if="formData.type === 'zset'" :label="$t('form.score')">
+        <el-input v-model="formData.score" :placeholder="$t('form.scorePlaceholder')" type="number" />
       </el-form-item>
 
-      <el-form-item v-if="formData.type === 'hash'" prop="hash_key" label="Hash Key">
-        <el-input v-model="formData.hash_key" placeholder="输入 Hash 键名" />
+      <el-form-item v-if="formData.type === 'hash'" prop="hash_key" :label="$t('form.hashKey')">
+        <el-input v-model="formData.hash_key" :placeholder="$t('form.hashKeyPlaceholder')" />
       </el-form-item>
 
-      <el-form-item label="值">
-        <el-input type="textarea" v-model="formData.val" :rows="5" placeholder="输入值" />
+      <el-form-item :label="$t('form.value')">
+        <el-input type="textarea" v-model="formData.val" :rows="5" :placeholder="$t('form.valuePlaceholder')" />
       </el-form-item>
 
       <el-form-item class="form-actions">
@@ -41,9 +41,9 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          保存
+          {{ $t('common.save') }}
         </button>
-        <button type="button" class="btn-cancel" @click="close">取消</button>
+        <button type="button" class="btn-cancel" @click="close">{{ $t('common.cancel') }}</button>
       </el-form-item>
     </el-form>
   </div>
@@ -56,13 +56,17 @@ export default {
   name: "formPage",
   data() {
     return {
-      rules: {
-        key: [{ required: true, message: '请填写 Key', trigger: 'blur' }],
-        hash_key: [{ required: true, message: '请填写 Hash 键名', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择类型', trigger: 'change' }],
-      },
       dbName: 0,
       formData: {}
+    }
+  },
+  computed: {
+    rules() {
+      return {
+        key: [{ required: true, message: this.$t('form.keyRequired'), trigger: 'blur' }],
+        hash_key: [{ required: true, message: this.$t('form.hashKeyRequired'), trigger: 'blur' }],
+        type: [{ required: true, message: this.$t('form.typeRequired'), trigger: 'change' }],
+      }
     }
   },
   methods: {

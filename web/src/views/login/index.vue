@@ -20,13 +20,31 @@
           <span class="logo-bracket">]</span>
           <span class="logo-cursor">_</span>
         </div>
-        <p class="subtitle">连接到管理面板</p>
+        <p class="subtitle">{{ $t('login.subtitle') }}</p>
+        <div class="lang-login-switch">
+          <button
+            type="button"
+            class="lang-btn"
+            :class="{ 'is-active': $i18n.locale === 'zh-CN' }"
+            @click="changeLanguage('zh-CN')"
+          >
+            {{ $t('common.chinese') }}
+          </button>
+          <button
+            type="button"
+            class="lang-btn"
+            :class="{ 'is-active': $i18n.locale === 'en-US' }"
+            @click="changeLanguage('en-US')"
+          >
+            {{ $t('common.english') }}
+          </button>
+        </div>
       </div>
 
       <!-- 表单 -->
       <div class="card-body" v-show="!success">
         <div class="input-group">
-          <label class="input-label">用户名</label>
+          <label class="input-label">{{ $t('login.username') }}</label>
           <div class="input-wrap" :class="{ 'is-focus': focusUser }">
             <span class="input-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -37,7 +55,7 @@
             <input
               v-model="user"
               type="text"
-              placeholder="输入用户名"
+              :placeholder="$t('login.usernamePlaceholder')"
               @focus="focusUser = true"
               @blur="focusUser = false"
               @keyup.enter="$refs.pwdInput.focus()"
@@ -46,7 +64,7 @@
         </div>
 
         <div class="input-group">
-          <label class="input-label">密码</label>
+          <label class="input-label">{{ $t('login.password') }}</label>
           <div class="input-wrap" :class="{ 'is-focus': focusPwd }">
             <span class="input-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -58,7 +76,7 @@
               ref="pwdInput"
               v-model="pwd"
               type="password"
-              placeholder="输入密码"
+              :placeholder="$t('login.passwordPlaceholder')"
               @focus="focusPwd = true"
               @blur="focusPwd = false"
               @keyup.enter="login"
@@ -67,10 +85,10 @@
         </div>
 
         <button class="btn-login" @click="login" :disabled="loading">
-          <span class="btn-text" v-show="!loading">登 录</span>
+          <span class="btn-text" v-show="!loading">{{ $t('login.loginButton') }}</span>
           <span class="btn-spinner" v-show="loading">
             <span class="spinner"></span>
-            验证中...
+            {{ $t('login.validating') }}
           </span>
         </button>
       </div>
@@ -82,14 +100,14 @@
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
-        <p class="success-text">连接成功</p>
-        <p class="success-sub">正在进入管理面板...</p>
+        <p class="success-text">{{ $t('login.success') }}</p>
+        <p class="success-sub">{{ $t('login.redirecting') }}</p>
       </div>
 
       <!-- 底部 -->
       <div class="card-footer">
         <span class="footer-dot"></span>
-        <span>GoRedisAdmin</span>
+        <span>{{ $t('common.appName') }}</span>
       </div>
     </div>
   </div>
@@ -113,7 +131,7 @@ export default {
   methods: {
     async login() {
       if (this.user === "" || this.pwd === "") {
-        this.$message.error("用户名或密码不能为空")
+        this.$message.error(this.$t('login.emptyCredentials'))
         return
       }
       this.loading = true
@@ -130,6 +148,9 @@ export default {
       } catch (e) {
         this.loading = false
       }
+    },
+    changeLanguage(lang) {
+      this.$setLanguage(lang)
     }
   }
 }
@@ -259,6 +280,34 @@ export default {
   color: #6b6560;
   letter-spacing: 0.5px;
   animation: logo-enter 0.5s 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.lang-login-switch {
+  margin-top: 14px;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.lang-btn {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: #8a857f;
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-btn:hover {
+  color: #e8a36a;
+  border-color: rgba(220, 107, 47, 0.45);
+}
+
+.lang-btn.is-active {
+  color: #e8a36a;
+  border-color: rgba(220, 107, 47, 0.55);
+  background: rgba(220, 107, 47, 0.1);
 }
 
 /* ── 表单 ── */
