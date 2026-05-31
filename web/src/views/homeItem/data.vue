@@ -1,45 +1,55 @@
 <template>
-  <div>
-    <h3>数据类型：{{ nowInfo.type }}</h3>
-
-    <el-card v-if="nowInfo.type==='hash'">
-      <el-table
-          :data="data"
-          style="width: 100%;max-height: 600px;overflow-y: auto">
-        <el-table-column
-            type="index"
-            width="50">
-        </el-table-column>
-        <el-table-column
-            prop="key"
-            label="Key"
-        >
-        </el-table-column>
-        <el-table-column
-            prop="value"
-            label="值"
-        >
-        </el-table-column>
-      </el-table>
-    </el-card>
-    <el-card v-else-if="nowInfo.type==='string'">
-      <p>Key: <span style="margin-left: 10px">{{ nowInfo.key }}</span></p>
-      <el-divider></el-divider>
-      <p>Value:<span style="margin-left: 10px">{{ dataStr }}</span></p>
-    </el-card>
-    <el-card v-else-if="nowInfo.type==='set' || nowInfo.type==='list' || nowInfo.type==='zset'">
-      <div style="    display: flex;   flex-direction: row; flex-wrap: wrap;">
-        <span class="set_body" v-for="item in data">{{ item }}</span>
-      </div>
-    </el-card>
-    <el-card v-else>
-      暂不支持预览此类型数据
-    </el-card>
-
-    <div style="text-align: right;margin-top: 20px">
-      <el-button @click="close" size="small" icon="el-icon-close">关闭</el-button>
+  <div class="data-viewer">
+    <div class="data-header">
+      <span class="data-key">{{ nowInfo.key }}</span>
+      <span class="type-badge" :class="'type-' + nowInfo.type">{{ nowInfo.type }}</span>
     </div>
 
+    <!-- string -->
+    <div v-if="nowInfo.type === 'string'" class="data-section">
+      <div class="section-label">Value</div>
+      <div class="code-block">{{ dataStr }}</div>
+    </div>
+
+    <!-- hash -->
+    <div v-else-if="nowInfo.type === 'hash'" class="data-section">
+      <div class="section-label">Hash Fields <span class="count-badge">{{ data.length }}</span></div>
+      <div class="hash-table">
+        <div class="hash-row hash-row-header">
+          <span class="hash-col hash-idx">#</span>
+          <span class="hash-col hash-key">Key</span>
+          <span class="hash-col hash-val">Value</span>
+        </div>
+        <div class="hash-row" v-for="(item, idx) in data" :key="idx">
+          <span class="hash-col hash-idx">{{ idx + 1 }}</span>
+          <span class="hash-col hash-key">{{ item.key }}</span>
+          <span class="hash-col hash-val">{{ item.value }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- set / list / zset -->
+    <div v-else-if="nowInfo.type === 'set' || nowInfo.type === 'list' || nowInfo.type === 'zset'" class="data-section">
+      <div class="section-label">{{ nowInfo.type.toUpperCase() }} Members <span class="count-badge">{{ data.length }}</span></div>
+      <div class="tag-list">
+        <span class="data-tag" v-for="(item, idx) in data" :key="idx">{{ item }}</span>
+      </div>
+    </div>
+
+    <!-- unsupported -->
+    <div v-else class="data-section">
+      <p style="color: var(--text-muted)">暂不支持预览此类型数据</p>
+    </div>
+
+    <div class="data-footer">
+      <button class="btn-close" @click="close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        关闭
+      </button>
+    </div>
   </div>
 </template>
 
@@ -66,10 +76,7 @@ export default {
       this.$emit("closeData")
     },
     async getData() {
-      let data = {
-        key: this.nowInfo.key,
-        type: this.nowInfo.type
-      }
+      let data = { key: this.nowInfo.key, type: this.nowInfo.type }
       let res = await this.$API.dbApi.reqGetValueByKey(this.dbNum, data)
       if (res.code === 0) {
         if (this.nowInfo.type === "string") {
@@ -86,10 +93,202 @@ export default {
 </script>
 
 <style scoped>
-.set_body {
-  padding: 5px;
-  margin: 5px 10px;
-  border: 1px solid #c1bfbf8f;
-  border-radius: 10px;
+.data-viewer {
+  animation: fade-in 0.3s ease both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+.data-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.data-key {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.type-string { background: rgba(76, 175, 125, 0.12); color: #4caf7d; }
+.type-hash   { background: rgba(220, 107, 47, 0.12); color: #dc6b2f; }
+.type-list   { background: rgba(100, 149, 237, 0.12); color: #6495ed; }
+.type-set    { background: rgba(187, 134, 252, 0.12); color: #bb86fc; }
+.type-zset   { background: rgba(255, 215, 0, 0.12); color: #daa520; }
+
+.data-section {
+  margin-bottom: 20px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count-badge {
+  font-size: 10px;
+  background: rgba(255,255,255,0.06);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--text-secondary);
+}
+
+.code-block {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent-light);
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 14px 16px;
+  word-break: break-all;
+  line-height: 1.6;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ── Hash table ── */
+.hash-table {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.hash-row {
+  display: flex;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.hash-row:last-child {
+  border-bottom: none;
+}
+
+.hash-row-header {
+  background: rgba(255,255,255,0.03);
+}
+
+.hash-row-header .hash-col {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.hash-col {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.hash-idx {
+  width: 50px;
+  flex-shrink: 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.hash-key {
+  width: 140px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-light);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.hash-val {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Tag list ── */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.data-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  word-break: break-all;
+  transition: all 0.15s;
+}
+
+.data-tag:hover {
+  border-color: rgba(220, 107, 47, 0.3);
+  background: var(--accent-glow);
+  color: var(--accent-light);
+}
+
+/* ── Footer ── */
+.data-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.btn-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
 }
 </style>

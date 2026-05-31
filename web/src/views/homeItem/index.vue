@@ -1,190 +1,231 @@
 <template>
-  <div style="margin-top: 20px">
-    <el-row :gutter="20">
-      <el-col :span="4" :offset="2">
-        <el-card>
-          <el-row>
-            <span style="line-height: 29px">LocalHost</span>
-            <el-button @click="getDbList()" style="float: right" type="" plain size="mini"
-                       icon="el-icon-refresh"></el-button>
-          </el-row>
-          <el-divider></el-divider>
-          <ul v-loading="leftLoading" style="padding-left: 20px">
-            <li @click="handleClickLeft(item)" :class="{'active_db':item.db_num===activeDb.db_num}" class="db_son"
-                v-for="(item,index) in dbInfo" :key="index">
-              <svg style="width: 15px;height: 15px" t="1666163640157" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                   xmlns="http://www.w3.org/2000/svg" p-id="1823" width="128" height="128">
-                <path
-                    d="M1023.786667 611.84c-0.426667 9.770667-13.354667 20.693333-39.893334 34.56-54.613333 28.458667-337.749333 144.896-397.994666 176.298667-60.288 31.402667-93.738667 31.104-141.354667 8.32-47.616-22.741333-348.842667-144.469333-403.114667-170.368-27.093333-12.970667-40.917333-23.893333-41.386666-34.218667v103.509333c0 10.325333 14.250667 21.290667 41.386666 34.261334 54.272 25.941333 355.541333 147.626667 403.114667 170.368 47.616 22.784 81.066667 23.082667 141.354667-8.362667 60.245333-31.402667 343.338667-147.797333 397.994666-176.298667 27.776-14.464 40.106667-25.728 40.106667-35.925333v-102.058667l-0.213333-0.085333z"
-                    fill="" p-id="1824"></path>
-                <path
-                    d="M1023.744 443.093333c-0.426667 9.770667-13.354667 20.650667-39.850667 34.517334-54.613333 28.458667-337.749333 144.896-397.994666 176.298666-60.288 31.402667-93.738667 31.104-141.354667 8.362667-47.616-22.741333-348.842667-144.469333-403.114667-170.410667-27.093333-12.928-40.917333-23.893333-41.386666-34.176v103.509334c0 10.325333 14.250667 21.248 41.386666 34.218666 54.272 25.941333 355.498667 147.626667 403.114667 170.368 47.616 22.784 81.066667 23.082667 141.354667-8.32 60.245333-31.402667 343.338667-147.84 397.994666-176.298666 27.776-14.506667 40.106667-25.770667 40.106667-35.968v-102.058667l-0.256-0.042667z"
-                    fill="" p-id="1825"></path>
-                <path
-                    d="M1023.744 268.074667c0.512-10.410667-13.098667-19.541333-40.490667-29.610667-53.248-19.498667-334.634667-131.498667-388.522666-151.253333-53.888-19.712-75.818667-18.901333-139.093334 3.84C392.234667 113.706667 92.629333 231.253333 39.338667 252.074667c-26.666667 10.496-39.68 20.181333-39.253334 30.506666V386.133333c0 10.325333 14.250667 21.248 41.386667 34.218667 54.272 25.941333 355.498667 147.669333 403.114667 170.410667 47.616 22.741333 81.066667 23.04 141.354666-8.362667 60.245333-31.402667 343.338667-147.84 397.994667-176.298667 27.776-14.506667 40.106667-25.770667 40.106667-35.968V268.074667h-0.341334zM366.72 366.08l237.269333-36.437333-71.68 105.088-165.546666-68.650667z m524.8-94.634667l-140.330667 55.466667-15.232 5.973333-140.245333-55.466666 155.392-61.44 140.373333 55.466666z m-411.989333-101.674666l-22.954667-42.325334 71.594667 27.989334 67.498666-22.101334-18.261333 43.733334 68.778667 25.770666-88.704 9.216-19.882667 47.786667-32.085333-53.290667-102.4-9.216 76.416-27.562666z m-176.768 59.733333c70.058667 0 126.805333 21.973333 126.805333 49.109333s-56.746667 49.152-126.805333 49.152-126.848-22.058667-126.848-49.152c0-27.136 56.789333-49.152 126.848-49.152z"
-                    fill="" p-id="1826"></path>
+  <div class="home-page">
+    <div class="home-layout">
+      <!-- ── 左侧数据库列表 ── -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title">Databases</span>
+          <button class="btn-icon" @click="getDbList()" :class="{ 'is-spinning': leftLoading }" title="刷新">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </button>
+        </div>
+        <div class="sidebar-body" v-loading="leftLoading">
+          <div
+            v-for="(item, index) in dbInfo"
+            :key="index"
+            class="db-item"
+            :class="{ 'is-active': item.db_num === activeDb.db_num }"
+            @click="handleClickLeft(item)"
+          >
+            <span class="db-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
               </svg>
-              {{ item.show_name }} <span style="color: grey">({{ item.keys_len }})</span>
-            </li>
-          </ul>
-        </el-card>
-      </el-col>
-      <el-col :span="16">
-        <el-card>
-        <span>
-          当前数据库：<span v-show="activeDb.show_name">{{ activeDb.show_name }}  <span
-            style="color: grey"> ({{ activeDb.keys_len }})</span></span>
-          <span v-show="!activeDb.show_name">- - -</span>
-        </span>
-          <div style="float: right;">
-            <el-button-group>
-              <el-button @click="handleClickLeft(activeDb)" :disabled="!activeDb.show_name" size="small"
-                         icon="el-icon-refresh">刷新
-              </el-button>
-              <el-button @click="showForm({})" :disabled="!activeDb.show_name" size="small" icon="el-icon-plus">添加新键
-              </el-button>
-              <el-button @click="handleFlush('db')" :disabled="!activeDb.show_name" size="small"
-                         icon="el-icon-delete">清空库
-              </el-button>
-            </el-button-group>
-            <el-popconfirm style="margin-left: 10px"
-                           :title="'确定清空所有数据库吗？'"
-                           @confirm="handleFlush('all')"
-            >
-              <el-button slot="reference" type="danger" :disabled="!activeDb.show_name" size="small"
-                         icon="el-icon-delete">FlushAll
-              </el-button>
+            </span>
+            <span class="db-name">{{ item.show_name }}</span>
+            <span class="db-count">{{ item.keys_len }}</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── 右侧内容区 ── -->
+      <section class="content">
+        <!-- 顶部操作栏 -->
+        <div class="content-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-db" v-if="activeDb.show_name">
+              <span class="toolbar-db-label">当前</span>
+              <span class="toolbar-db-name">{{ activeDb.show_name }}</span>
+              <span class="toolbar-db-count">{{ activeDb.keys_len }} keys</span>
+            </span>
+            <span class="toolbar-db" v-else>
+              <span class="toolbar-db-label" style="color: var(--text-muted)">请选择数据库</span>
+            </span>
+          </div>
+          <div class="toolbar-right" v-if="activeDb.show_name">
+            <button class="btn-tool" @click="handleClickLeft(activeDb)" title="刷新">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              刷新
+            </button>
+            <button class="btn-tool btn-accent" @click="showForm({})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              新增 Key
+            </button>
+            <button class="btn-tool btn-ghost" @click="handleFlush('db')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+              清空库
+            </button>
+            <el-popconfirm title="确定清空所有数据库？" @confirm="handleFlush('all')">
+              <button class="btn-tool btn-danger" slot="reference">FlushAll</button>
             </el-popconfirm>
           </div>
+        </div>
 
-        </el-card>
-        <el-card v-loading="rightLoading" style="margin-top: 10px;min-height: 700px">
-          <el-skeleton v-show="rightLoading" :rows="12"/>
-          <div v-show="activeDb.show_name">
-            <div class="top_filter">
-              <div>
-                <el-button @click="handelDelBatch" style="margin-left: 8px" type="danger" plain size="mini"
-                           icon="el-icon-delete">批量删除
-                </el-button>
-                <el-button @click="handelExportData" style="margin-left: 8px" type="" plain size="mini"
-                           icon="el-icon-download">导出数据
-                </el-button>
+        <!-- 数据表格区 -->
+        <div class="content-body" v-loading="rightLoading">
+          <template v-if="activeDb.show_name">
+            <!-- 过滤栏 -->
+            <div class="filter-bar">
+              <div class="filter-actions">
+                <button class="btn-tool btn-sm" @click="handelDelBatch">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                  批量删除
+                </button>
+                <button class="btn-tool btn-sm" @click="handelExportData">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  导出数据
+                </button>
               </div>
-
-              <el-form inline>
-                <el-form-item label="过滤">
-                  <el-input
-                      v-model="filter"
-                      placeholder="搜索过滤Key"
-                      prefix-icon="el-icon-search"
-                      @change="changeFilter"
-                      clearable
-                  />
-                </el-form-item>
-              </el-form>
+              <div class="filter-search">
+                <el-input
+                  v-model="filter"
+                  placeholder="搜索过滤 Key..."
+                  prefix-icon="el-icon-search"
+                  @change="changeFilter"
+                  clearable
+                  size="small"
+                />
+              </div>
             </div>
 
-
+            <!-- 表格 -->
             <el-table
-                ref="multipleTable"
-                @selection-change="handleSelectionChange"
-                :data="pageData"
-                style="width: 100%">
-              <el-table-column
-                  type="selection"
-                  width="55">
-              </el-table-column>
-              <el-table-column
-                  prop="id"
-                  label="ID"
-                  align="center"
-                  width="100">
-              </el-table-column>
-              <el-table-column
-                  prop="key"
-                  label="Key"
-                  width="width">
-              </el-table-column>
-              <el-table-column
-                  prop="expire_at"
-                  label="有效时间"
-                  width="width">
-              </el-table-column>
-              <el-table-column
-                  prop="type"
-                  label="类型"
-                  width="100">
-              </el-table-column>
-              <el-table-column
-                  prop="len"
-                  label="值大小"
-                  width="100">
-              </el-table-column>
-              <el-table-column
-                  width="200"
-                  align="center"
-                  label="操作">
+              ref="multipleTable"
+              @selection-change="handleSelectionChange"
+              :data="pageData"
+              style="width: 100%"
+            >
+              <el-table-column type="selection" width="45" />
+              <el-table-column prop="id" label="ID" align="center" width="70" />
+              <el-table-column prop="key" label="Key" min-width="200" />
+              <el-table-column prop="expire_at" label="有效时间" width="140" />
+              <el-table-column prop="type" label="类型" width="90">
                 <template v-slot:default="{row}">
-                  <!--                  <el-button @click="handleEdit(row)" type="primary" plain size="mini"
-                                               icon="el-icon-edit-outline"></el-button>-->
-                  <el-button @click="viewData(row)" type="primary" plain size="mini"
-                             icon="el-icon-info"></el-button>
-                  <el-button @click="expireKey(row)" type="primary" plain size="mini"
-                             icon="el-icon-time"></el-button>
-                  <el-popconfirm
-                      :title="'确定删除 ['+row.key+'] 吗？'"
-                      @confirm="delKey(row.key)"
-                  >
-                    <el-button style="margin-left: 8px" slot="reference" type="danger" plain size="mini"
-                               icon="el-icon-delete"></el-button>
-                  </el-popconfirm>
+                  <span class="type-badge" :class="'type-' + row.type">{{ row.type }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="len" label="大小" width="100" />
+              <el-table-column width="180" align="center" label="操作">
+                <template v-slot:default="{row}">
+                  <div class="row-actions">
+                    <button class="btn-row" title="查看" @click="viewData(row)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    </button>
+                    <button class="btn-row" title="过期时间" @click="expireKey(row)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
+                    </button>
+                    <el-popconfirm :title="'确定删除 [' + row.key + '] 吗？'" @confirm="delKey(row.key)">
+                      <button class="btn-row btn-row-danger" title="删除" slot="reference">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                          <line x1="10" y1="11" x2="10" y2="17"/>
+                          <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg>
+                      </button>
+                    </el-popconfirm>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
-            <el-pagination style="margin-top: 10px;text-align: center"
-                           @current-change="changePage"
-                           background
-                           :page-size="limit"
-                           :total="total"
-                           :current-page="page"
-                           layout="prev, pager, next, ->, total"
-            >
-            </el-pagination>
+
+            <!-- 分页 -->
+            <div class="pagination-bar">
+              <el-pagination
+                @current-change="changePage"
+                background
+                :page-size="limit"
+                :total="total"
+                :current-page="page"
+                layout="prev, pager, next, ->, total"
+              />
+            </div>
+          </template>
+
+          <div v-else class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3"/>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+            </svg>
+            <p>选择左侧数据库开始管理</p>
           </div>
-          <el-empty v-show="!activeDb.show_name" description="请选择左侧数据库"></el-empty>
-        </el-card>
-      </el-col>
-    </el-row>
-    <el-dialog :title="'提示：当前数据库：'+activeDb.show_name" :visible.sync="activeForm" :close-on-click-modal="false"
-               :close-on-press-escape="false" :show-close="false" :destroy-on-close="true">
-      <FormPage ref="p_form" @closeForm="closeForm"></FormPage>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── Dialogs ── -->
+    <el-dialog
+      :title="'新增 Key — ' + activeDb.show_name"
+      :visible.sync="activeForm"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="true"
+      :destroy-on-close="true"
+      append-to-body
+      width="520px"
+    >
+      <FormPage ref="p_form" @closeForm="closeForm" />
     </el-dialog>
 
-    <el-dialog title="查看数据" :visible.sync="activeData" :close-on-click-modal="false"
-               :close-on-press-escape="false" :show-close="false" :destroy-on-close="true">
-      <DataPage ref="p_data" @closeData="closeData"></DataPage>
+    <el-dialog
+      title="查看数据"
+      :visible.sync="activeData"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="true"
+      :destroy-on-close="true"
+      append-to-body
+      width="600px"
+    >
+      <DataPage ref="p_data" @closeData="closeData" />
     </el-dialog>
   </div>
 </template>
+
 <script>
 import FormPage from "./form_page"
 import DataPage from "./data"
 
 export default {
   name: "homeItem",
-  components: {
-    FormPage,
-    DataPage
-  },
+  components: { FormPage, DataPage },
   data() {
     return {
       activeDb: {},
       dbInfo: [],
       allPageData: [],
       pageData: [],
-      limit: 10, //page count
-      page: 1, //now page,
-      total: 0,//all total
+      limit: 10,
+      page: 1,
+      total: 0,
       leftLoading: false,
       rightLoading: false,
       activeForm: false,
@@ -204,23 +245,18 @@ export default {
         this.$refs.p_data.initData(this.activeDb.db_num, row)
       })
     },
-
-    // 批量删除
     handelDelBatch() {
-      let waitDelKey = [];
-      this.multipleSelection.forEach(item => {
-        waitDelKey.push(item.key)
-      })
+      let waitDelKey = []
+      this.multipleSelection.forEach(item => waitDelKey.push(item.key))
       if (waitDelKey.length <= 0) {
         this.$message.warning("请选择要删除的数据")
-        return false
+        return
       }
-      this.$confirm('此操作将永久删除选中的数据吗, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除选中的数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        // waitDelKey转为逗号分隔的字符串
         waitDelKey = waitDelKey.join(",")
         let res = await this.$API.dbApi.reqDelKey(this.activeDb.db_num, waitDelKey)
         if (res.code === 0) {
@@ -229,64 +265,52 @@ export default {
         } else {
           this.$message.error(res.message)
         }
-      }).catch(() => {
-      });
+      }).catch(() => {})
     },
-
-    // 导出数据
     handelExportData() {
-      let waitDelKey = [];
-      this.multipleSelection.forEach(item => {
-        waitDelKey.push(item.key)
-      })
+      let waitDelKey = []
+      this.multipleSelection.forEach(item => waitDelKey.push(item.key))
       if (waitDelKey.length <= 0) {
         this.$message.warning("请选择要导出的key")
-        return false
+        return
       }
-      this.$confirm('确定要导出选中的数据吗, 是否继续?', '提示', {
+      this.$confirm('确定要导出选中的数据吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-        // waitDelKey转为逗号分隔的字符串
         waitDelKey = waitDelKey.join(",")
         try {
           await this.$API.dbApi.reqExportKey(this.activeDb.db_num, waitDelKey)
-          this.$message.success("Success!")
+          this.$message.success("导出成功!")
         } catch (e) {
           this.$message.error(e)
         }
-      }).catch(() => {
-      });
+      }).catch(() => {})
     },
-
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
-
     expireKey(row) {
-      this.$prompt('请输入过期时间（秒）', '提示', {
+      this.$prompt('请输入过期时间（秒，0为永不过期）', '设置过期时间', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-      }).then(async ({value}) => {
-        let res = await this.$API.dbApi.reqExpireKey(this.activeDb.db_num, value, row.key);
+      }).then(async ({ value }) => {
+        let res = await this.$API.dbApi.reqExpireKey(this.activeDb.db_num, value, row.key)
         if (res.code === 0) {
           this.$message.success(res.message)
           await this.reload()
         } else {
           this.$message.error(res.message)
         }
-      }).catch(() => {
-      });
-      console.log(row)
+      }).catch(() => {})
     },
-
     handleEdit(row) {
       this.showForm(row)
     },
     handleFlush(type) {
-      let msg = type === "all" ? "全部数据库" : "数据库" + this.activeDb.db_num + "的全部"
-      this.$confirm('此操作将清空' + msg + '数据, 是否继续?', '提示', {
+      let msg = type === "all" ? "全部数据库" : "数据库 " + this.activeDb.show_name
+      this.$confirm('此操作将清空' + msg + ' 的数据, 是否继续?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -298,8 +322,7 @@ export default {
         } else {
           this.$message.error(res.message)
         }
-      }).catch(() => {
-      });
+      }).catch(() => {})
     },
     showForm(info) {
       this.activeForm = true
@@ -309,9 +332,7 @@ export default {
     },
     async closeForm(type) {
       this.activeForm = false
-      if (type === 2) { //筛选页面
-        await this.reload()
-      }
+      if (type === 2) await this.reload()
     },
     async closeData() {
       this.activeData = false
@@ -327,7 +348,6 @@ export default {
       this.changePage(page <= 0 ? 1 : page)
       await this.getDbList()
     },
-    //改变分页
     changePage(p) {
       this.page = p
       this.pageData = this.allPageData[p - 1 < 0 ? 0 : p - 1]
@@ -340,12 +360,9 @@ export default {
       this.total = 0
       this.getKeysByDb(item.db_num)
     },
-
-    changeFilter(value) {
-      let db = this.activeDb.db_num;
-      this.getKeysByDb(db);
+    changeFilter() {
+      this.getKeysByDb(this.activeDb.db_num)
     },
-
     async getDbList() {
       this.leftLoading = true
       let res = await this.$API.dbApi.reqGetDbList()
@@ -374,28 +391,350 @@ export default {
       this.rightLoading = false
       this.leftLoading = false
     }
-  },
+  }
 }
 </script>
+
 <style scoped>
-.db_son {
-  list-style: none;
-  padding: 10px 10px;
-  cursor: pointer;
+.home-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: page-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.active_db {
-  background: #EBEEF5;
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(12px); }
 }
 
-.top_filter {
+.home-layout {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-
+  gap: 20px;
 }
 
-.el-form-item {
-  margin-bottom: 0px;
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 12px;
+}
+
+.sidebar-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.btn-icon.is-spinning svg {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.sidebar-body {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.db-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-left: 2px solid transparent;
+}
+
+.db-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.db-item.is-active {
+  background: var(--accent-glow);
+  border-left-color: var(--accent);
+}
+
+.db-item.is-active .db-name {
+  color: var(--accent-light);
+}
+
+.db-item.is-active .db-icon {
+  color: var(--accent);
+}
+
+.db-icon {
+  color: var(--text-muted);
+  display: flex;
+  flex-shrink: 0;
+}
+
+.db-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.db-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+/* ── Content ── */
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-db {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-db-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.toolbar-db-name {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-light);
+}
+
+.toolbar-db-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.04);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Buttons ── */
+.btn-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-tool:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.btn-tool.btn-accent {
+  background: linear-gradient(135deg, var(--accent), #c45a22);
+  border-color: transparent;
+  color: #fff;
+}
+
+.btn-tool.btn-accent:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 16px rgba(220, 107, 47, 0.25);
+}
+
+.btn-tool.btn-ghost {
+  border-color: transparent;
+  color: var(--text-muted);
+}
+
+.btn-tool.btn-ghost:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
+  border-color: transparent;
+}
+
+.btn-tool.btn-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-tool.btn-danger:hover {
+  background: rgba(224, 82, 82, 0.1);
+}
+
+.btn-tool.btn-sm {
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 6px;
+}
+
+/* ── Body ── */
+.content-body {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 16px;
+  min-height: 500px;
+}
+
+/* ── Filter bar ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.filter-search {
+  width: 240px;
+}
+
+/* ── Type badge ── */
+.type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.type-string { background: rgba(76, 175, 125, 0.12); color: #4caf7d; }
+.type-hash   { background: rgba(220, 107, 47, 0.12); color: #dc6b2f; }
+.type-list   { background: rgba(100, 149, 237, 0.12); color: #6495ed; }
+.type-set    { background: rgba(187, 134, 252, 0.12); color: #bb86fc; }
+.type-zset   { background: rgba(255, 215, 0, 0.12); color: #daa520; }
+
+/* ── Row actions ── */
+.row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-row:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-primary);
+}
+
+.btn-row-danger:hover {
+  background: rgba(224, 82, 82, 0.1);
+  color: var(--danger);
+}
+
+/* ── Pagination ── */
+.pagination-bar {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: var(--text-muted);
+}
+
+.empty-state svg {
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.empty-state p {
+  font-size: 14px;
+  margin: 0;
 }
 </style>

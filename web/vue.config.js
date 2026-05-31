@@ -3,6 +3,7 @@ module.exports = defineConfig({
     transpileDependencies: true,
     productionSourceMap: false,
     lintOnSave: false,
+    outputDir: '../html',
     devServer: {
       proxy: {
         "/api/v1": {

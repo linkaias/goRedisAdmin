@@ -1,47 +1,73 @@
 <template>
-  <div>
-    <el-row :gutter="10">
-      <el-col :span="2" :offset="6">
-        <div style="line-height: 68px;text-align: center;font-size: 22px;font-weight: bold">
-          <span> GoRedisAdmin</span>
-        </div>
-      </el-col>
-      <el-col :span="10" :offset="1">
-        <el-menu default-active="1" mode="horizontal" @select="handleSelect">
-          <el-menu-item index="1">数据库</el-menu-item>
-          <el-menu-item index="2">Redis信息</el-menu-item>
-          <el-menu-item index="3">
-            <a target="_blank" @click="logout"> 退出登录</a>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <svg style="height: 18px;width: 18px" t="1666160259230" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                 xmlns="http://www.w3.org/2000/svg" p-id="3458" width="128" height="128">
-              <path
-                  d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z"
-                  p-id="3459"></path>
-            </svg>
-            <a href="https://github.com/linkaias/goRedisAdmin" target="_blank"> Github | 文档</a>
-          </el-menu-item>
+  <div class="header-inner">
+    <div class="header-brand" @click="$router.push('/')">
+      <span class="brand-bracket">[</span>
+      <span class="brand-text">redis</span>
+      <span class="brand-at">@</span>
+      <span class="brand-host">admin</span>
+      <span class="brand-bracket">]</span>
+    </div>
 
-        </el-menu>
-      </el-col>
-    </el-row>
+    <nav class="header-nav">
+      <a
+        class="nav-item"
+        :class="{ 'is-active': activeRoute === '/home' || activeRoute === '/' }"
+        @click="go('/')"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/>
+          <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+        </svg>
+        <span>数据库</span>
+      </a>
+      <a
+        class="nav-item"
+        :class="{ 'is-active': activeRoute === '/info' }"
+        @click="go('/info')"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        <span>Redis 信息</span>
+      </a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="action-link" href="https://github.com/linkaias/goRedisAdmin" target="_blank" title="GitHub">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+      </a>
+      <div class="action-divider"></div>
+      <a class="nav-item nav-logout" @click="logout">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>退出</span>
+      </a>
+    </div>
   </div>
 </template>
+
 <script>
 import {RemoveToken} from "@/utils/token";
 
 export default {
   name: "HeaderItem",
+  computed: {
+    activeRoute() {
+      return this.$route.path
+    }
+  },
   methods: {
-    handleSelect(key, keyPath) {
-      switch (key) {
-        case "1":
-          this.$router.push("/")
-          break
-        case "2":
-          this.$router.push("/info")
-          break
+    go(path) {
+      if (this.$route.path !== path) {
+        this.$router.push(path)
       }
     },
     logout() {
@@ -51,5 +77,104 @@ export default {
   }
 }
 </script>
+
 <style scoped>
+.header-inner {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Brand ── */
+.header-brand {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 40px;
+  flex-shrink: 0;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+.header-brand:hover {
+  opacity: 0.8;
+}
+
+.brand-bracket { color: var(--text-muted); }
+.brand-text    { color: var(--text-secondary); }
+.brand-at      { color: var(--accent); }
+.brand-host    { color: var(--accent-light); }
+
+/* ── Nav ── */
+.header-nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  user-select: none;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
+}
+
+.nav-item.is-active {
+  color: var(--accent-light);
+  background: var(--accent-glow);
+}
+
+/* ── Actions ── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.action-link:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
+}
+
+.action-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-subtle);
+}
+
+.nav-logout {
+  color: var(--text-muted);
+}
+
+.nav-logout:hover {
+  color: var(--danger);
+  background: rgba(224, 82, 82, 0.08);
+}
 </style>

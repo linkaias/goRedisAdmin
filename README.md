@@ -2,74 +2,191 @@
     GoRedisAdmin
 </p>
 
-## 简介
+## Language
 
-[go-redis-admin](https://github.com/linkaias/goRedisAdmin)
-是一款使用golang和vue2开发的Redis的后台管理平台，它包含了在线的数据库管理和简洁的操作界面，旨在方便用户管理redis数据。
+[English](README.md) | [中文](README.zh-CN.md)
 
-- [在线预览](http://gradmin.uiucode.com/#/login) 用户名：admin 密码：123456
+## Introduction
 
-- [使用文档](https://github.com/linkaias/goRedisAdmin)
+GoRedisAdmin is a Redis admin platform built with Golang (Gin) and Vue 2 (Element UI). It provides online database management and a clean operation UI to make Redis data administration easier.
 
-- 示例页面
+- [Documentation](https://github.com/linkaias/goRedisAdmin)
+- Screenshots
 
+### Login Page
 <p align="center">
-    <img width="900" src="http://gradmin.uiucode.com/image/login.png">
-</p>
-<p align="center">
-    <img width="900" src="http://gradmin.uiucode.com/image/home.png">
-</p>
-<p align="center">
-    <img width="900" src="http://gradmin.uiucode.com/image/add.png">
+    <img width="900" src="docs/images/login.png" alt="Login page screenshot">
 </p>
 
-## 功能
+### Home Page
+<p align="center">
+    <img width="900" src="docs/images/home.png" alt="Home page screenshot">
+</p>
 
-```
-- 登录/注销 
-- 数据库列表
-- 数据库Key管理
-- 新增Key(目前支持string、list、set、zset、hash)
-- Key过期时间配置
-- 支持添加访问IP白名单 
-- 删除某个Key
-- 清空数据库(flushdb)
-- 清空全部库（flushall）
-- 批量导出 key
-- 批量导入 key（开发中）
+### Add Key
+<p align="center">
+    <img width="900" src="docs/images/add_key.png" alt="Add key screenshot">
+</p>
 
-```
+### Redis Info Page
+<p align="center">
+    <img width="900" src="docs/images/redis_info.png" alt="Redis info page screenshot">
+</p>
 
-## 安装
+## Features
+
+- Login and logout with JWT authentication and auto token refresh
+- Database list (Db0 - Db15)
+- Redis key management with fuzzy search
+- Create keys for five data types: string, list, set, zset, hash
+- Configure key expiration
+- Delete specific keys (supports batch delete)
+- Clear current database (flushdb)
+- Clear all databases (flushall)
+- Export keys in batch as JSON files
+- View Redis INFO details
+- IP whitelist access control
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Backend | Go 1.19 + Gin + go-redis v6 |
+| Frontend | Vue 2 + Element UI + Axios |
+| Authentication | JWT (golang-jwt) |
+| Logging | Logrus + daily file rotation |
+| Configuration | INI format (ini.v1) |
+
+## Installation
+
+### Requirements
+
+- Go 1.19+
+- Node.js 14+ (only required if you need to modify frontend source code)
+- Redis instance
+
+### Deployment
 
 ```bash
-# 克隆项目
+# Clone project
 git clone https://github.com/linkaias/goRedisAdmin.git
 
-# 进入项目目录
+# Enter project directory
 cd goRedisAdmin
 
-# 创建日志文件夹,此文件夹需要可写权限
-mkdir var
+# Create runtime directories
+mkdir -p var/export
 
-# 根据注释修改配置文件
+# Update configuration (Redis connection, admin account, port, etc.)
 vim config.ini
 
-# 安装依赖
+# Install dependencies
 go mod tidy
 
-# 启动服务
+# Start server
 go run main.go
 ```
 
-部署完成后本地浏览器访问 http://127.0.0.1:9527
+After deployment, open http://127.0.0.1:9527 in your browser.
 
-## Online Demo
+### Configuration
 
-[在线 Demo](http://gradmin.uiucode.com/#/login)
-[Online Demo](http://gradmin.uiucode.com/#/login)
+Edit `config.ini`:
 
-## JetBrains open source certificate support
+```ini
+[redis]
+name = Localhost          # Connection name
+host = 127.0.0.1          # Redis host
+port = 6379               # Redis port
+pwd =                     # Redis password (optional)
+timeout = 60              # Connection timeout (seconds)
+do_timeout = 60           # Operation timeout (seconds)
+
+[whitelist_ip]
+allow_ip = "127.0.0.1"    # IP whitelist, split by comma, no limit if empty
+
+[admin]
+username = "admin"        # Login username
+password = "123456"       # Login password
+port = 9527               # Service port
+
+[log]
+log_path = "var/log.log"  # Log path
+max_save_day = 30         # Log retention days
+```
+
+### Manage with Shell Script
+
+```bash
+cd shell
+
+# Build and start
+sh run.sh gradmin build
+
+# Start / Stop / Restart
+sh run.sh gradmin start
+sh run.sh gradmin stop
+sh run.sh gradmin restart
+```
+
+### Frontend Development
+
+```bash
+cd web
+npm install
+npm run serve    # Start development server
+npm run build    # Build to html/ directory
+```
+
+## Project Structure
+
+```text
+goRedisAdmin/
+├── main.go                    # Entry point
+├── config.ini                 # Configuration
+├── routers/                   # Routing layer
+│   ├── view_router/           #   Frontend page routes
+│   ├── api_router/            #   API routes (user/db/info)
+│   └── middleware/            #   Middlewares (JWT, IP whitelist)
+├── controller/                # Controller layer
+│   ├── base_controller.go     #   Base controller
+│   ├── user_controller/       #   Login/logout
+│   ├── db_data_controller/    #   Redis data operations
+│   └── info_controller/       #   Redis INFO
+├── global/                    # Global state
+│   ├── global_redis/          #   Redis client factory
+│   ├── global_response/       #   Unified response structure
+│   ├── global_write_ip/       #   IP whitelist
+│   └── initData/              #   Config initialization
+├── utils/                     # Utilities
+│   ├── bcrypt_utils.go        #   JWT / bcrypt
+│   ├── log_utils/             #   Logging (logrus + async writer)
+│   └── exoprt_utils/          #   Key export
+├── html/                      # Frontend build output (served by Go)
+├── web/                       # Vue 2 frontend source code
+└── var/                       # Runtime data (logs, export files)
+```
+
+## API
+
+All endpoints are under `/api/v1`. Except login, requests require header `Authorization: Bearer <token>`.
+
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /api/v1/user/login | Login |
+| GET | /api/v1/user/logout | Logout |
+| GET | /api/v1/db/db_list | Get database list |
+| GET | /api/v1/db/get_keys | Get key list for a database |
+| GET | /api/v1/db/get_val | Get key detail |
+| POST | /api/v1/db/get_val_by_key | Get key value by type |
+| POST | /api/v1/db/key | Create key |
+| DELETE | /api/v1/db/key | Delete key |
+| POST | /api/v1/db/key/expire | Update key expiration |
+| DELETE | /api/v1/db/flush | Clear current database |
+| POST | /api/v1/db/export_keys | Export keys in batch |
+| GET | /api/v1/info/get_info | Get Redis INFO |
+
+## JetBrains Open Source Support
 
 The GoRedisAdmin project has always been developed in the GoLand integrated development environment under JetBrains,
 based on the free JetBrains Open Source license(s) genuine free license. I would like to express my gratitude.
