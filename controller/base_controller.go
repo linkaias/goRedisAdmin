@@ -1,23 +1,28 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/goccy/go-json"
 	"goRedisAdmin/global/global_response"
 	"goRedisAdmin/utils/log_utils"
 	"io"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
 )
 
+// BaseController provides shared helper methods for all controllers.
+// It wraps response builder and request parameter conversion helpers.
 type BaseController struct {
 	Resp *global_response.Response
 }
 
+// BaseInit initializes the response helper instance.
 func (b *BaseController) BaseInit() {
 	b.Resp = new(global_response.Response)
 }
 
-//JSONToStruct 将json转换为结构体
+// JSONToStruct unmarshals a JSON string into the provided target object.
+// Any parsing error is logged and returned.
 func (b *BaseController) JSONToStruct(jsonStr string, obj interface{}) error {
 	err := json.Unmarshal([]byte(jsonStr), obj)
 	if err != nil {
@@ -27,7 +32,10 @@ func (b *BaseController) JSONToStruct(jsonStr string, obj interface{}) error {
 	return nil
 }
 
-//GetBodyByRequest 获取请求体body中的数据
+// GetBodyByRequest reads request body bytes based on Content-Length.
+//
+// Note: This helper performs a single read and is designed for current
+// request patterns in this codebase.
 func (b *BaseController) GetBodyByRequest(ctx *gin.Context) ([]byte, error) {
 	body := make([]byte, ctx.Request.ContentLength)
 	_, err := ctx.Request.Body.Read(body)
@@ -38,8 +46,9 @@ func (b *BaseController) GetBodyByRequest(ctx *gin.Context) ([]byte, error) {
 	return body, nil
 }
 
-// ParamToInt 把请求参数转化为int
-//method "get"/"post"
+// ParamToInt reads a GET/POST parameter and parses it as int.
+//
+// method accepts "get"/"GET" or "post"/"POST".
 func (b *BaseController) ParamToInt(ctx *gin.Context, param string, method string) (int, error) {
 	intStr := ""
 	if method == "get" || method == "GET" {
@@ -50,8 +59,9 @@ func (b *BaseController) ParamToInt(ctx *gin.Context, param string, method strin
 	return strconv.Atoi(intStr)
 }
 
-// ParamToInt64 把请求参数转化为int64
-//method "get"/"post"
+// ParamToInt64 reads a GET/POST parameter and parses it as int64.
+//
+// method accepts "get"/"GET" or "post"/"POST".
 func (b *BaseController) ParamToInt64(ctx *gin.Context, param string, method string) (int64, error) {
 	intStr := ""
 	if method == "get" || method == "GET" {

@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+// TestExportUtils_ExportFile verifies that SaveFile creates a JSON export file
+// from in-memory snapshot data.
 func TestExportUtils_ExportFile(t *testing.T) {
 	cont := &ExportUtils{
 		data: []*ExportRedisDataModel{
@@ -21,5 +23,6 @@ func TestExportUtils_ExportFile(t *testing.T) {
 		t.Fatalf("export file not created: %v", err)
 	}
 
+	// Cleanup generated test artifact.
 	_ = os.Remove(filePath)
 }

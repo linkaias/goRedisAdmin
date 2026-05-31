@@ -3,8 +3,6 @@ package db_data_controller
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	"goRedisAdmin/controller"
 	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/utils/exoprt_utils"
@@ -13,18 +11,24 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 )
 
+// dbDataCont implements Redis DB/key/value HTTP handlers.
 type dbDataCont struct {
 	controller.BaseController
 }
 
+// NewDbDataController creates a DB data controller with base init.
 func NewDbDataController() DbDataController {
 	cont := new(dbDataCont)
 	cont.BaseInit()
 	return cont
 }
 
+// DbDataController defines all Redis data management endpoints.
 type DbDataController interface {
 	DbList(ctx *gin.Context)
 	GetKeys(ctx *gin.Context)
@@ -33,11 +37,12 @@ type DbDataController interface {
 	AddVal(ctx *gin.Context)
 	Flush(ctx *gin.Context)
 	GetValByKey(ctx *gin.Context)
-	// ExpireKey 修改key的过期时间
+	// ExpireKey updates key TTL.
 	ExpireKey(ctx *gin.Context)
 	ExportKey(ctx *gin.Context)
 }
 
+// DbList returns all supported Redis DB indices with key counts.
 func (c dbDataCont) DbList(ctx *gin.Context) {
 	data := make([]map[string]interface{}, 0)
 	for i := 0; i < 16; i++ {
@@ -53,6 +58,8 @@ func (c dbDataCont) DbList(ctx *gin.Context) {
 	}
 	c.Resp.RespSuccessWithData(data, ctx)
 }
+
+// getDbKeyLen returns number of keys in the specified Redis DB.
 func getDbKeyLen(i int) (uint, error) {
 	rd, err := global_redis.GetRedisClient(i)
 	if err != nil {
@@ -63,9 +70,9 @@ func getDbKeyLen(i int) (uint, error) {
 	return uint(num), nil
 }
 
-// GetKeys 获取数据库的keys
+// GetKeys lists keys in a selected DB, including type, length and expire info.
 func (c dbDataCont) GetKeys(ctx *gin.Context) {
-	//default value is 0
+	// db_num defaults to 0 when parsing fails.
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
 	if err != nil {
@@ -81,6 +88,7 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 	}
 
 	info, _ := rd.Keys(filter).Result()
+	// Build frontend table rows.
 	data := make([]map[string]interface{}, 0)
 	for i, key := range info {
 		temp := make(map[string]interface{})
@@ -107,7 +115,7 @@ func (c dbDataCont) GetKeys(ctx *gin.Context) {
 	c.Resp.RespSuccessWithData(data, ctx)
 }
 
-// GetVal 获取详细的value
+// GetVal fetches value details using unified payload and type dispatcher.
 func (c dbDataCont) GetVal(ctx *gin.Context) {
 	s := new(DbDataHelpModel)
 	err := ctx.ShouldBind(s)
@@ -137,6 +145,7 @@ func (c dbDataCont) GetVal(ctx *gin.Context) {
 
 }
 
+// Flush clears selected DB or all DBs depending on query param `type`.
 func (c dbDataCont) Flush(ctx *gin.Context) {
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
@@ -168,9 +177,9 @@ func (c dbDataCont) Flush(ctx *gin.Context) {
 	c.Resp.RespSuccess(ctx)
 }
 
-// DelKey 删除key
+// DelKey deletes one or multiple keys separated by comma.
 func (c dbDataCont) DelKey(ctx *gin.Context) {
-	//default db is 0
+	// db_num defaults to 0 when parsing fails.
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
 	if err != nil {
@@ -201,8 +210,9 @@ func (c dbDataCont) DelKey(ctx *gin.Context) {
 	c.Resp.RespSuccess(ctx)
 }
 
+// ExportKey exports selected keys to a JSON file and returns it as attachment.
 func (c dbDataCont) ExportKey(ctx *gin.Context) {
-	//default db is 0
+	// db_num defaults to 0 when parsing fails.
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
 	if err != nil {
@@ -230,25 +240,25 @@ func (c dbDataCont) ExportKey(ctx *gin.Context) {
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
-	// 设置响应头
-	// 设置响应头
+	// Configure file-download headers.
 	ctx.Header("Content-Type", "application/json")
 	ctx.Header("Content-Disposition", `attachment; filename="keys.json"`)
 	ctx.Header("Content-Transfer-Encoding", "binary")
-	// 读取 JSON 文件
+	// Read generated JSON file content.
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		log_utils.WriteLog("err", err, nil)
 		c.Resp.RespError(err.Error(), ctx)
 		return
 	}
-	// 发送文件
+	// Send file content in response body.
 	ctx.Data(http.StatusOK, "application/json", data)
 }
 
-// ExpireKey 修改key的过期时间
+// ExpireKey updates key expiration time in seconds.
+// expire=0 means remove expiration and persist the key.
 func (c dbDataCont) ExpireKey(ctx *gin.Context) {
-	//default db is 0
+	// db_num defaults to 0 when parsing fails.
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	expireInt, _ := c.ParamToInt(ctx, "expire", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
@@ -263,9 +273,9 @@ func (c dbDataCont) ExpireKey(ctx *gin.Context) {
 		c.Resp.RespError("key is required", ctx)
 		return
 	}
-	if expireInt == 0 { // 设置无过期时间
+	if expireInt == 0 { // Persist key (no expiration).
 		rd.Persist(key)
-	} else { // 设置过期时间
+	} else { // Set expiration.
 		_, err = rd.Expire(key, time.Duration(expireInt)*time.Second).Result()
 	}
 	if err != nil {
@@ -276,7 +286,7 @@ func (c dbDataCont) ExpireKey(ctx *gin.Context) {
 	c.Resp.RespSuccess(ctx)
 }
 
-// AddVal 新增键值
+// AddVal creates a key/value according to provided Redis type.
 func (c dbDataCont) AddVal(ctx *gin.Context) {
 	s := new(DbDataHelpModel)
 	err := ctx.ShouldBind(s)
@@ -305,9 +315,9 @@ func (c dbDataCont) AddVal(ctx *gin.Context) {
 	c.Resp.RespSuccess(ctx)
 }
 
-// GetValByKey 获取数据通过key
+// GetValByKey fetches value by key with type-specific retrieval strategy.
 func (c dbDataCont) GetValByKey(ctx *gin.Context) {
-	//default value is 0
+	// db_num defaults to 0 when parsing fails.
 	dbNum, _ := c.ParamToInt(ctx, "db_num", "get")
 	rd, err := global_redis.GetRedisClient(dbNum)
 	if err != nil {
@@ -342,7 +352,7 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 		return
 	}
 	if s.DType == "hash" {
-		//default value is 0
+		// cursor defaults to 0 for HSCAN pagination.
 		cursorNum, _ := c.ParamToInt(ctx, "cursor", "get")
 		filter := ctx.Query("filter")
 		strings, cursor, err := rd.HScan(s.Key, uint64(cursorNum), filter, 100).Result()
@@ -424,6 +434,7 @@ func (c dbDataCont) GetValByKey(ctx *gin.Context) {
 	c.Resp.RespSuccessWithData(nil, ctx)
 }
 
+// handleAddVal dispatches add operation by Redis data type.
 func handleAddVal(valType string, cont *DbDataHelpCont) error {
 	switch valType {
 	case "string":
@@ -440,6 +451,7 @@ func handleAddVal(valType string, cont *DbDataHelpCont) error {
 	return errors.New("type not supported ! ")
 }
 
+// handleGetVal dispatches get operation by Redis data type.
 func handleGetVal(valType string, cont *DbDataHelpCont) (interface{}, error) {
 	switch valType {
 	case "string":
@@ -453,6 +465,8 @@ func handleGetVal(valType string, cont *DbDataHelpCont) (interface{}, error) {
 	return nil, errors.New("type not supported ! ")
 }
 
+// descHashPageData converts flat HSCAN field/value list into
+// [{"key": field, "value": value}] format.
 func descHashPageData(wait []string) ([]map[string]string, error) {
 	if !isPageOk(len(wait)) {
 		return nil, errors.New("数据异常！")
@@ -472,7 +486,7 @@ func descHashPageData(wait []string) ([]map[string]string, error) {
 		temVal = val
 		tempKey = i
 	}
-	//二次处理
+	// Transform intermediate map into stable key/value list objects.
 	for _, temp := range res {
 		for key, val := range temp {
 			last = append(
@@ -486,6 +500,7 @@ func descHashPageData(wait []string) ([]map[string]string, error) {
 	return last, nil
 }
 
+// isPageOk checks whether array length is even (field/value pairs).
 func isPageOk(num int) bool {
 	intRes := num / 2
 	floatRes := float64(num) / 2.0
@@ -496,6 +511,7 @@ func isPageOk(num int) bool {
 	}
 }
 
+// getLenByKey returns type-specific length/size text for a key.
 func getLenByKey(rd *redis.Client, key, keyType string) string {
 	lenMsg := ""
 	switch keyType {
@@ -519,6 +535,7 @@ func getLenByKey(rd *redis.Client, key, keyType string) string {
 	return lenMsg
 }
 
+// convertBytes converts byte count into human-readable binary unit string.
 func convertBytes(bytes int64) string {
 	units := []string{"B", "KB", "MB", "GB", "TB", "PB"}
 	var index int

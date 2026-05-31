@@ -2,24 +2,29 @@ package log_utils
 
 import (
 	"fmt"
-	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
-	"github.com/rifflock/lfshook"
-	"github.com/sirupsen/logrus"
 	"goRedisAdmin/global/initData"
 	"os"
 	"time"
+
+	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
+	"github.com/rifflock/lfshook"
+	"github.com/sirupsen/logrus"
 )
 
+// logClient is the shared logrus instance used across the application.
 var logClient *logrus.Logger
 
+// logDataStruct represents one asynchronous log event.
 type logDataStruct struct {
 	error  error
 	title  string
 	result interface{}
 }
 
+// waitWriteLog is the buffered queue for asynchronous log writes.
 var waitWriteLog = make(chan *logDataStruct, 1000)
 
+// init configures logrus output, rotation strategy and JSON formatter hook.
 func init() {
 	cfg := initData.IniRead.Section("log")
 
@@ -31,6 +36,7 @@ func init() {
 		fmt.Println("err", err)
 		return
 	}
+	// Disable default stdout output; logs are persisted via hooks.
 	logClient.Out = src
 	logClient.SetLevel(logrus.DebugLevel)
 
@@ -39,23 +45,26 @@ func init() {
 
 	logWriter, err := rotatelogs.New(
 		logPath+".%Y-%m-%d-%H-%M.log",
-		rotatelogs.WithLinkName(logPath),                          // 生成软链，指向最新日志文件
-		rotatelogs.WithMaxAge(24*time.Hour*time.Duration(logDay)), // 文件最大保存时间
-		rotatelogs.WithRotationTime(time.Hour*24),                 // 日志切割时间间隔
+		rotatelogs.WithLinkName(logPath),                          // Symlink to current log file.
+		rotatelogs.WithMaxAge(24*time.Hour*time.Duration(logDay)), // Maximum retention duration.
+		rotatelogs.WithRotationTime(time.Hour*24),                 // Daily rotation interval.
 	)
 	writeMap := lfshook.WriterMap{
 		logrus.InfoLevel:  logWriter,
 		logrus.ErrorLevel: logWriter,
 	}
+	// Persist structured logs as JSON for easier downstream parsing.
 	lfHook := lfshook.NewHook(writeMap, &logrus.JSONFormatter{})
 
 	logClient.AddHook(lfHook)
 }
 
+// RunLog starts background workers to consume log queue and write log entries.
 func RunLog() {
 	for i := 0; i < 2; i++ {
 		go func() {
 			for log := range waitWriteLog {
+				// Write info log when no error attached; otherwise write error log.
 				if log.error == nil {
 					logClient.Infof("[ title: %s ; body: %+v ]",
 						log.title,
@@ -73,6 +82,7 @@ func RunLog() {
 	}
 }
 
+// WriteLog enqueues one log record for asynchronous persistence.
 func WriteLog(title string, err error, v interface{}) {
 	waitWriteLog <- &logDataStruct{
 		error:  err,

@@ -3,14 +3,17 @@ package initData
 import (
 	"goRedisAdmin/global/global_redis"
 	"goRedisAdmin/global/global_write_ip"
-	"gopkg.in/ini.v1"
 	"log"
 	"strings"
+
+	"gopkg.in/ini.v1"
 )
 
-//IniRead ini reader
+// IniRead is the global handle of config.ini loaded at package init time.
 var IniRead *ini.File
 
+// init loads config.ini from project root; panic on failure to prevent
+// starting with invalid runtime configuration.
 func init() {
 	cfg, err := ini.Load("./config.ini")
 	if err != nil {
@@ -19,12 +22,14 @@ func init() {
 	IniRead = cfg
 }
 
+// Initialization wires global runtime config into corresponding packages.
 func Initialization() {
 	global_redis.SetRDConfig(IniRead.Section("redis"))
-	//白名单
+	// Initialize in-memory IP whitelist set.
 	initWriteListIp(IniRead.Section("whitelist_ip"))
 }
 
+// initWriteListIp parses comma-separated allow_ip and fills whitelist map.
 func initWriteListIp(config *ini.Section) {
 	ips := config.Key("allow_ip").String()
 	if ips != "" {

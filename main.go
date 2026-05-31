@@ -6,13 +6,16 @@ import (
 	"goRedisAdmin/utils/log_utils"
 )
 
+// init loads configuration and initializes global runtime data
+// (Redis config, IP whitelist, etc.) before main starts.
 func init() {
 	initData.Initialization()
 }
 
+// main starts background log workers and then boots the HTTP server.
 func main() {
-	//记录日志
+	// Start async log consumers.
 	log_utils.RunLog()
-	//run app
+	// Start Gin application and block.
 	routers.RunApp()
 }

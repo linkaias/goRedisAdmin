@@ -1,13 +1,17 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"goRedisAdmin/global/global_write_ip"
 	"goRedisAdmin/global/initData"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-//HTTPAuthMiddleware login middleware
+// HTTPAuthMiddleware provides optional HTTP Basic Auth protection.
+//
+// It compares incoming credentials with [admin] username/password from config.
+// If admin credentials are empty, the middleware allows all requests.
 func HTTPAuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cfg := initData.IniRead.Section("admin")
@@ -25,6 +29,11 @@ func HTTPAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// IpCheckMiddleware blocks requests whose client IP is not in whitelist.
+//
+// Behavior:
+//   - If whitelist is empty: allow all IPs.
+//   - If whitelist has entries: allow only exact matching client IPs.
 func IpCheckMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if len(global_write_ip.WriteListIp) > 0 {
@@ -36,8 +45,8 @@ func IpCheckMiddleware() gin.HandlerFunc {
 				return
 			}
 		}
-		// 请求前
+		// Continue to next handler.
 		c.Next()
-		// 请求后
+		// Post-handler hook reserved for future use.
 	}
 }

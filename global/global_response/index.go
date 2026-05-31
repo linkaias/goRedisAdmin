@@ -1,10 +1,12 @@
 package global_response
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
+// RespPageResult is the canonical paged payload shape returned by APIs.
 type RespPageResult struct {
 	List     []map[string]interface{} `json:"list"`
 	Total    int64                    `json:"total"`
@@ -12,7 +14,7 @@ type RespPageResult struct {
 	PageSize int                      `json:"pageSize"`
 }
 
-// Response 全局响应结构体
+// Response is the unified API response envelope.
 type Response struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
@@ -20,12 +22,15 @@ type Response struct {
 }
 
 const (
-	ERROR   = 7
+	// ERROR indicates a generic business or request error.
+	ERROR = 7
+	// NoLOGIN indicates authentication failure or missing login token.
 	NoLOGIN = 6
+	// SUCCESS indicates successful request handling.
 	SUCCESS = 0
 )
 
-// Response 自定义返回数据
+// Response writes the standard response envelope as JSON with HTTP 200.
 func (f Response) Response(code int, msg string, data interface{}, ctx *gin.Context) {
 	ctx.JSON(
 		http.StatusOK, Response{
@@ -36,27 +41,27 @@ func (f Response) Response(code int, msg string, data interface{}, ctx *gin.Cont
 	)
 }
 
-// RespPage 返回分页数据格式
+// RespPage writes a successful paged payload.
 func (f Response) RespPage(data *RespPageResult, ctx *gin.Context) {
 	f.Response(SUCCESS, "Success !", data, ctx)
 }
 
-// RespSuccess 操作成功
+// RespSuccess writes a successful empty object response.
 func (f Response) RespSuccess(ctx *gin.Context) {
 	f.Response(SUCCESS, "Success !", map[string]interface{}{}, ctx)
 }
 
-// RespSuccessWithMsg 操作成功并自定义msg
+// RespSuccessWithMsg writes a successful empty data response with custom message.
 func (f Response) RespSuccessWithMsg(message string, ctx *gin.Context) {
 	f.Response(SUCCESS, message, map[string]interface{}{}, ctx)
 }
 
-// RespSuccessWithData 操作成功并自定义data
+// RespSuccessWithData writes a successful response with custom payload.
 func (f Response) RespSuccessWithData(data interface{}, ctx *gin.Context) {
 	f.Response(SUCCESS, "Success !", data, ctx)
 }
 
-// RespError 请求失败自定义错误信息
+// RespError writes a standardized error response with custom message.
 func (f Response) RespError(msg string, ctx *gin.Context) {
 	f.Response(ERROR, msg, map[string]interface{}{}, ctx)
 }

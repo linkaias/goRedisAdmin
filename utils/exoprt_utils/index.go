@@ -11,18 +11,25 @@ import (
 	"github.com/goccy/go-json"
 )
 
+// ExportRedisDataModel describes one exported Redis key snapshot.
 type ExportRedisDataModel struct {
 	Key   string      `json:"key"`
 	Type  string      `json:"type"`
 	Value interface{} `json:"value"`
 }
 
+// ExportUtils collects and persists exported key data.
 type ExportUtils struct {
 	data []*ExportRedisDataModel
 }
 
+// LoadKeysData fetches values for given keys and appends them to export buffer.
+//
+// Supported Redis types: string, hash, list, set, zset.
+// Unsupported types are skipped.
 func (e *ExportUtils) LoadKeysData(client *redis.Client, keys []string) error {
 	for _, key := range keys {
+		// Detect key type first, then use corresponding fetch command.
 		keyType, err := client.Type(key).Result()
 		if err != nil {
 			continue
@@ -47,6 +54,7 @@ func (e *ExportUtils) LoadKeysData(client *redis.Client, keys []string) error {
 			return fmt.Errorf("failed to fetch value for key %s: %v", key, err)
 		}
 
+		// Save normalized snapshot record.
 		e.data = append(
 			e.data, &ExportRedisDataModel{
 				Key:   key,
@@ -58,16 +66,18 @@ func (e *ExportUtils) LoadKeysData(client *redis.Client, keys []string) error {
 	return nil
 }
 
+// SaveFile writes current export buffer to a formatted JSON file under var/export.
+// It creates target directory recursively when needed.
 func (e *ExportUtils) SaveFile() (string, error) {
 	baseDir := "./var/export"
-	// 递归创建目录，避免父目录不存在导致失败
+	// Create directory tree to avoid parent-directory missing errors.
 	if err := os.MkdirAll(baseDir, 0755); err != nil {
 		return "", err
 	}
-	// 将数据保存到JSON文件
+	// Compose output filename with timestamp.
 	filePath := baseDir + "/export_" + time.Now().Format("2006-01-02 15:04:05") + ".json"
 
-	// 保存到JSON文件
+	// Create and write JSON output.
 	file, err := os.Create(filePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to create output file: %v", err)
@@ -79,14 +89,16 @@ func (e *ExportUtils) SaveFile() (string, error) {
 	if err := encoder.Encode(e.data); err != nil {
 		return "", fmt.Errorf("failed to encode data to JSON: %v", err)
 	}
+
+	// The optional zip-compression path is intentionally kept disabled.
 	//oldFilePath := filePath
-	//// 压缩为zip文件
+	//// Compress to zip file.
 	//err = CompressFile(filePath, filePath+".zip")
 	//if err != nil {
 	//	return "", fmt.Errorf("failed to compress file: %v", err)
 	//}
 	//filePath = filePath + ".zip"
-	//// 删除原始文件
+	//// Remove original file.
 	//err = os.Remove(oldFilePath)
 	//if err != nil {
 	//	return "", fmt.Errorf("failed to remove original file: %v", err)
@@ -95,30 +107,32 @@ func (e *ExportUtils) SaveFile() (string, error) {
 	return filePath, nil
 }
 
+// CompressFile compresses a source file into a destination zip file.
 func CompressFile(src, dst string) error {
-	// 打开源文件
+	// Open source file.
 	srcFile, err := os.Open(src)
 	if err != nil {
 		return fmt.Errorf("failed to open source file: %v", err)
 	}
 	defer srcFile.Close()
 
-	// 创建目标文件
+	// Create destination file.
 	dstFile, err := os.Create(dst)
 	if err != nil {
 		return fmt.Errorf("failed to create destination file: %v", err)
 	}
 	defer dstFile.Close()
 
-	// 创建zip.Writer
+	// Create ZIP writer on destination file.
 	zipWriter := zip.NewWriter(dstFile)
 	defer zipWriter.Close()
 
-	// 将源文件添加到zip中
+	// Add source file entry into ZIP archive.
 	zipFile, err := zipWriter.Create(src)
 	if err != nil {
 		return fmt.Errorf("failed to create zip file: %v", err)
 	}
+	// Stream source content into zip entry.
 	_, err = io.Copy(zipFile, srcFile)
 	if err != nil {
 		return fmt.Errorf("failed to copy file to zip: %v", err)
