@@ -13,23 +13,25 @@ GoRedisAdmin 是一款使用 Golang (Gin) 和 Vue 2 (Element UI) 开发的 Redis
 - 示例页面（本地截图预览）
 
 ### 登录页
+默认登录信息：`admin` / `123456`
+
 <p align="center">
-    <img width="900" src="docs/images/login.png" alt="登录页截图">
+    <img width="900" src="docs/images/login-zh.png" alt="中文登录页截图">
 </p>
 
 ### 首页
 <p align="center">
-    <img width="900" src="docs/images/home.png" alt="首页截图">
+    <img width="900" src="docs/images/panel-zh.png" alt="登录后中文管理面板截图">
 </p>
 
 ### 新增 Key
 <p align="center">
-    <img width="900" src="docs/images/add_key.png" alt="新增 Key 截图">
+    <img width="900" src="docs/images/add_key-zh.png" alt="中文新增 Key 弹窗截图">
 </p>
 
 ### Redis 信息页
 <p align="center">
-    <img width="900" src="docs/images/redis_info.png" alt="Redis 信息页截图">
+    <img width="900" src="docs/images/redis_info-zh.png" alt="中文 Redis 信息页截图">
 </p>
 
 ## 功能

@@ -14,23 +14,25 @@ GoRedisAdmin is a Redis admin platform built with Golang (Gin) and Vue 2 (Elemen
 - Screenshots
 
 ### Login Page
+Default credentials: `admin` / `123456`
+
 <p align="center">
-    <img width="900" src="docs/images/login.png" alt="Login page screenshot">
+    <img width="900" src="docs/images/login-en.png" alt="English login page screenshot">
 </p>
 
 ### Home Page
 <p align="center">
-    <img width="900" src="docs/images/home.png" alt="Home page screenshot">
+    <img width="900" src="docs/images/panel-en.png" alt="English admin panel screenshot after login">
 </p>
 
 ### Add Key
 <p align="center">
-    <img width="900" src="docs/images/add_key.png" alt="Add key screenshot">
+    <img width="900" src="docs/images/add_key-en.png" alt="English add key dialog screenshot">
 </p>
 
 ### Redis Info Page
 <p align="center">
-    <img width="900" src="docs/images/redis_info.png" alt="Redis info page screenshot">
+    <img width="900" src="docs/images/redis_info-en.png" alt="English Redis info page screenshot">
 </p>
 
 ## Features
