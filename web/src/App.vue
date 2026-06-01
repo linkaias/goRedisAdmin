@@ -281,6 +281,7 @@ body {
 .el-select-dropdown {
   background: var(--bg-card) !important;
   border: 1px solid var(--border-subtle) !important;
+  z-index: 3100 !important;
 }
 
 .el-select-dropdown__item {
@@ -298,6 +299,10 @@ body {
 
 .el-select .el-input .el-select__caret {
   color: var(--text-muted) !important;
+}
+
+.el-dialog .el-select {
+  width: 100%;
 }
 
 /* ── Button ── */

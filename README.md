@@ -10,6 +10,36 @@
 
 GoRedisAdmin is a Redis admin platform built with Golang (Gin) and Vue 2 (Element UI). It provides online database management and a clean operation UI to make Redis data administration easier.
 
+## Recent Changes (2026-06-01)
+
+### Current Workspace Updates
+
+- Backend: improved key value retrieval flow in `controller/db_data_controller/`
+    - fixed `GetString()` key lookup bug
+    - added unified readers for `list`, `set`, `zset`, `hash`, and `stream`
+    - completed `handleGetVal` routing for these data types
+- Frontend: redesigned key detail dialog in `web/src/views/homeItem/data.vue`
+    - metadata panel (type / TTL / size)
+    - type-specific rendering tables
+    - copy single item / copy all
+    - JSON pretty view for string values
+    - stream fields parsing and display
+- Frontend forms and UX polish
+    - dynamic placeholders/hints by type in `web/src/views/homeItem/form_page.vue`
+    - dialog title now includes key name in `web/src/views/homeItem/index.vue`
+    - token cleanup on auth-expired responses in `web/src/api/request.js`
+    - select dropdown/dialog style fixes in `web/src/App.vue`
+    - additional i18n entries in both `en-US` and `zh-CN`
+- Build artifacts: refreshed hashed assets in `html/` after frontend rebuild
+
+### Recent Git Commits
+
+- `8bc54fa` feat(redis): support stream key type in web admin
+- `eb3c664` docs: refresh bilingual screenshots for login and panels
+- `c636e96` feat(i18n): add Chinese/English UI and language switch
+- `caa9168` docs(go): add detailed English comments across backend code
+- `7e4556f` chore: upgrade deps and fix failing go tests
+
 - [Documentation](https://github.com/linkaias/goRedisAdmin)
 - Screenshots
 

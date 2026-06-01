@@ -38,7 +38,11 @@
       </el-form-item>
 
       <el-form-item :label="$t('form.value')">
-        <el-input type="textarea" v-model="formData.val" :rows="5" :placeholder="$t('form.valuePlaceholder')" />
+        <el-input type="textarea" v-model="formData.val" :rows="5" :placeholder="valuePlaceholderText" />
+        <div v-if="valueHintLines.length" class="value-hint">
+          <div class="value-hint-label">{{ $t('form.value') }} {{ formData.type }} {{ $t('form.formatHint') }}</div>
+          <code v-for="(line, i) in valueHintLines" :key="i" class="value-hint-line">{{ line }}</code>
+        </div>
       </el-form-item>
 
       <el-form-item class="form-actions">
@@ -73,6 +77,26 @@ export default {
         stream_field: [{ required: true, message: this.$t('form.streamFieldRequired'), trigger: 'blur' }],
         type: [{ required: true, message: this.$t('form.typeRequired'), trigger: 'change' }],
       }
+    },
+    valuePlaceholderText() {
+      const map = {
+        string: 'form.valuePlaceholderString',
+        list: 'form.valuePlaceholderListShort',
+        set: 'form.valuePlaceholderSetShort',
+        zset: 'form.valuePlaceholderZsetShort',
+        hash: 'form.valuePlaceholderHash',
+        stream: 'form.valuePlaceholderStreamShort',
+      }
+      return this.$t(map[this.formData.type] || 'form.valuePlaceholder')
+    },
+    valueHintLines() {
+      const map = {
+        list: ['item1', 'item2', 'item3'],
+        set: ['member1', 'member2', 'member3'],
+        zset: ['member1', 'member2'],
+        stream: ['name John', 'age 25'],
+      }
+      return map[this.formData.type] || []
     }
   },
   methods: {
@@ -131,10 +155,16 @@ export default {
 .form-row {
   display: flex;
   gap: 12px;
+  align-items: flex-start;
 }
 
 .form-row-item {
   flex: 1;
+  margin-bottom: 18px;
+}
+
+.form-row-item .el-select {
+  width: 100%;
 }
 
 .form-row-small {
@@ -187,5 +217,31 @@ export default {
 .btn-cancel:hover {
   border-color: var(--text-muted);
   color: var(--text-primary);
+}
+
+.value-hint {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+}
+
+.value-hint-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.value-hint-line {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-light);
+  padding: 2px 0;
+  line-height: 1.6;
 }
 </style>

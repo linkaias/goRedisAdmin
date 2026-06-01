@@ -61,7 +61,88 @@ func (d *DbDataHelpCont) AddString() error {
 
 // GetString gets string value by key.
 func (d *DbDataHelpCont) GetString() (string, error) {
-	return d.redis.Get(d.Val).Result()
+	return d.redis.Get(d.Key).Result()
+}
+
+// GetList returns all members of a list.
+func (d *DbDataHelpCont) GetList() (interface{}, error) {
+	result, err := d.redis.LRange(d.Key, 0, -1).Result()
+	if err != nil {
+		return nil, err
+	}
+	return map[string]interface{}{
+		"data":  result,
+		"count": len(result),
+	}, nil
+}
+
+// GetSet returns all members of a set.
+func (d *DbDataHelpCont) GetSet() (interface{}, error) {
+	result, err := d.redis.SMembers(d.Key).Result()
+	if err != nil {
+		return nil, err
+	}
+	return map[string]interface{}{
+		"data":  result,
+		"count": len(result),
+	}, nil
+}
+
+// GetZSet returns all members of a sorted set with scores.
+func (d *DbDataHelpCont) GetZSet() (interface{}, error) {
+	result, err := d.redis.ZRangeWithScores(d.Key, 0, -1).Result()
+	if err != nil {
+		return nil, err
+	}
+	data := make([]map[string]interface{}, 0, len(result))
+	for _, item := range result {
+		data = append(data, map[string]interface{}{
+			"member": item.Member,
+			"score":  item.Score,
+		})
+	}
+	return map[string]interface{}{
+		"data":  data,
+		"count": len(data),
+	}, nil
+}
+
+// GetHash returns all field/value pairs of a hash.
+func (d *DbDataHelpCont) GetHash() (interface{}, error) {
+	result, err := d.redis.HGetAll(d.Key).Result()
+	if err != nil {
+		return nil, err
+	}
+	data := make([]map[string]string, 0, len(result))
+	for k, v := range result {
+		data = append(data, map[string]string{
+			"key":   k,
+			"value": v,
+		})
+	}
+	return map[string]interface{}{
+		"data":  data,
+		"count": len(data),
+	}, nil
+}
+
+// GetStream returns all entries of a stream.
+func (d *DbDataHelpCont) GetStream() (interface{}, error) {
+	result, err := d.redis.XRange(d.Key, "-", "+").Result()
+	if err != nil {
+		return nil, err
+	}
+	data := make([]map[string]string, 0, len(result))
+	for _, item := range result {
+		data = append(data, map[string]string{
+			"id":     item.ID,
+			"fields": marshalStreamFields(item.Values),
+		})
+	}
+	return map[string]interface{}{
+		"data":  data,
+		"count": len(data),
+	}, nil
 }
 
 // AddList pushes value into list and applies optional expiration.

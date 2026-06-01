@@ -196,14 +196,15 @@
     </el-dialog>
 
     <el-dialog
-      :title="$t('home.viewDataTitle')"
+      :title="viewDataTitle"
       :visible.sync="activeData"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="true"
       :destroy-on-close="true"
       append-to-body
-      width="600px"
+      width="720px"
+      class="data-dialog"
     >
       <DataPage ref="p_data" @closeData="closeData" />
     </el-dialog>
@@ -231,7 +232,13 @@ export default {
       activeForm: false,
       activeData: false,
       filter: "*",
-      multipleSelection: []
+      multipleSelection: [],
+      viewingKey: ""
+    }
+  },
+  computed: {
+    viewDataTitle() {
+      return this.viewingKey ? `${this.$t('home.viewDataTitle')} — ${this.viewingKey}` : this.$t('home.viewDataTitle')
     }
   },
   mounted() {
@@ -240,6 +247,7 @@ export default {
   },
   methods: {
     viewData(row) {
+      this.viewingKey = row.key
       this.activeData = true
       this.$nextTick(() => {
         this.$refs.p_data.initData(this.activeDb.db_num, row)

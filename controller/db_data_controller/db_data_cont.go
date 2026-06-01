@@ -493,10 +493,15 @@ func handleGetVal(valType string, cont *DbDataHelpCont) (interface{}, error) {
 	case "string":
 		return cont.GetString()
 	case "list":
+		return cont.GetList()
 	case "set":
+		return cont.GetSet()
 	case "zset":
+		return cont.GetZSet()
 	case "hash":
-		fmt.Println("hash")
+		return cont.GetHash()
+	case "stream":
+		return cont.GetStream()
 	}
 	return nil, errors.New("type not supported ! ")
 }

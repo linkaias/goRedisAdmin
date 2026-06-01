@@ -1,7 +1,7 @@
 //对于axios进行二次封装
 import axios from "axios";
 import {Message} from 'element-ui'
-import {GetToken} from "@/utils/token";
+import {GetToken, RemoveToken} from "@/utils/token";
 import i18n from "@/i18n";
 
 //底下的代码也是创建axios实例
@@ -36,12 +36,13 @@ requests.interceptors.response.use(
         let res = response.data
         if (res.code !== 0 && res.code !== 200) {
             if (res.code == 6) {
+                RemoveToken()
                 Message({
                     message: i18n.t('request.loginExpired'),
                     type: 'error',
                     duration: 5 * 1000
                 })
-                window.location.href = '/#/login'; // 或者使用路由导航实现跳转
+                window.location.href = '/#/login';
             } else {
                 Message({
                     message: res.message || i18n.t('request.error'),
