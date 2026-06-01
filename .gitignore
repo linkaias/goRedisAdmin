@@ -23,3 +23,7 @@
 /web/package-lock.json
 
 /var/*
+
+# macOS system files
+.DS_Store
+**/.DS_Store
